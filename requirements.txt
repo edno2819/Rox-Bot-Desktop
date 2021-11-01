@@ -1,2 +1,4 @@
 eel
-
+pylint
+requests
+websocket-client==0.56

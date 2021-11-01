@@ -1,7 +1,7 @@
 from __future__ import print_function	
 import eel
-from views.models.login import save_register, recovery_password, login_user, login_session
-from views.models.menu import register_banks, register_cards, register_documents, register_key, update_all, select_registers, edit_registers, delete_registers
+from models.login import login_user, login_session
+from models.menu import register_banks, register_cards, register_documents, register_key, update_all, select_registers, edit_registers, delete_registers
 
 
 eel.init('views')
@@ -10,20 +10,21 @@ eel.init('views')
 
 @eel.expose # USADO PARA FUNCAO SER VISTA NO JS
 def btn_save(name,phone,date,login,passw,email):
-    msg = save_register(name,phone,date,login,passw,email)
+    msg = 'save_register(name,phone,date,login,passw,email)'
     eel.save_return(str(msg))
 
 
 @eel.expose
 def btn_recovery(email):
-    msg = recovery_password(email)
+    msg = ''
     eel.reco_return(str(msg))
 
 
 @eel.expose
 def btn_login(user_name, password):
-    msg = login_user(user_name, password)
-    eel.login_return(str(msg))
+    result = login_user(user_name, password)
+    result = '{'+f'"status_bot": "{result[0]}", "status_iq": "{result[1]}"' + '}'
+    eel.login_return(str(result))
 
 @eel.expose
 def get_user_online():

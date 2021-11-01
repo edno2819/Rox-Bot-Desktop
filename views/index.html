@@ -10,7 +10,9 @@
     <link rel="icon" href="img/password.png">
     <title>Secret Keys</title>
 </head> 
+
 <body onload="load_page();">
+
     <div class="container">
         <div class="background"></div>
 
@@ -30,7 +32,7 @@
                 <input type="password" class="inputs" name="user_login" id="get_user_password" placeholder="* * * * * * * * *">
             </div>
             <div class="buttons_container">
-                <label class="top_label" style="margin: 0 20px;">Esqueceu sua senha? <a href="#" onclick="recovery_pass('open');">Clique aqui</a></label>
+                <label class="top_label" style="margin: 0 20px;">Ainda sem acesso ao Bot? <a href="#" onclick="recovery_pass('open');">Clique aqui</a></label>
                 <button class="buttons" onclick="login_user();">Confirmar</button>
             </div>
             <div class="login_user" style="text-align: center;width: 100%;">
@@ -86,14 +88,24 @@
         </div>
 
         <div class="recovery_container">
-            <div class="title_new"><h2>RECUPERAR SENHA</h2></div>
+            <div class="title_new"><h2>Adesão de Plano</h2></div>
+            <div class="p">
+                <p class="p">Pagamento via PIX: R$ 15.00</p>
+            </div>
+            <br>
+            <div class="box_child">
+                <img id='barcode' src="https://api.qrserver.com/v1/create-qr-code/?data=HelloWorld&amp;size=100x100" alt="" width="150" height="150" class="center"/>
+            </div>
+            <br>
             <div class="box">
                 <label for="get_email" class="label_input">Email:</label>
-                <input type="email" name="get_email" id="get_email" class="inputs" style="width: 400px; text-align:center;" placeholder="example@example.com">
+                <input type="email" name="get_email" id="get_email" class="inputs" style="width: 100%; text-align:center;" placeholder="example@example.com">
             </div>
+            
+
             <div class="box" style="margin-top: 30px;">
-                <button class="buttons" style="margin-left:150px;" onclick="reco_pass_js();">Recuperar</button>
-                <button class="buttons" onclick="recovery_pass('close');">Fechar</button>
+                <button class="buttons" style="margin-left:15%;" onclick="recovery_pass('close');">Voltar</button>
+                <button class="buttons" style="margin-left:15%;" onclick="reco_pass_js();">Confirmar</button>
             </div>
             <div class="box" style="text-align:center;"><label class="label_input" id="reco_label" style="width: 99%; "></label></div>
         </div>
@@ -101,6 +113,13 @@
 
 
     <script type="text/javascript" >
+
+        function generateBarCode() 
+        {
+            var nric = $('#text').val();
+            var url = 'https://api.qrserver.com/v1/create-qr-code/?data=' + nric + '&amp;size=50x50';
+            $('#barcode').attr('src', url);
+        }
     
         // REGISTRO DE NOVO USUARIO
         async function save_register_js(){
@@ -144,11 +163,16 @@
 
         eel.expose(login_return)
         function login_return(status){
-            if (status == "sucesso"){
+            var status = JSON.parse(status);
+
+            if (status.status_bot == "True" & status.status_iq == "True"){
                 location.href = "menu.html";
             }
-            if (status == "falha"){
+            else if (status.status_iq == "False"){
                 $('#login_txt').text("Usuario ou Senha incorreto")
+            }
+            else if (status.status_bot == "False" & status.status_iq == "True"){
+                $('#login_txt').text("Usuario sem acesso ao bot")
             }
         }
 

@@ -1,0 +1,74 @@
+body{
+    padding: 0;
+    margin: 0;
+}
+@font-face{
+    font-family: "BungeeInline-Regular";
+    src: url("../fonts/BungeeInline-Regular.ttf");
+}
+@font-face{
+    font-family: "PoiretOne-Regular";
+    src: url("../fonts/PoiretOne-Regular.ttf");
+}
+
+.background{
+    width: 100vw;
+    height: 100vh;
+    background-image: url(../img/background_iq.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    filter:blur(5px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    transform: scale(1.02);
+}
+.login_container{
+    width: 60%;
+    overflow: hidden;
+    background-color: rgba(255,255,255,0.8);
+    margin: 5vw auto;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.title{
+    font-size: 30px;
+    color: #F24F00;
+    font-family: "BungeeInline-Regular";
+    line-height: 5vh;
+    margin-left: 2%;
+}
+
+.inputs{
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #F24F00;
+    margin: 0 10px;
+    outline: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    color:black;
+    padding-left: 10px;
+}
+
+.inputs:focus{
+    border-bottom:2px solid #F24F00;
+}
+.buttons{
+    margin: 0 20px;
+    border:1px solid white;
+    background:#F24F00 ;
+    color:white;
+    border-radius: 3px;
+    width: 120px;
+    height: 40px;
+    font-family: sans-serif;
+    font-size: 16px;
+}
+.buttons:hover{
+   cursor: pointer;
+   background:#F24F00 ; 
+}

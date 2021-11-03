@@ -8,7 +8,7 @@
     <script type="text/javascript" src="js/index_animations.js"></script>
     <link rel="stylesheet" href="css/index.css">
     <link rel="icon" href="img/password.png">
-    <title>Secret Keys</title>
+    <title>IQ Login</title>
 </head> 
 
 <body onload="load_page();">
@@ -166,7 +166,7 @@
             var status = JSON.parse(status);
 
             if (status.status_bot == "True" & status.status_iq == "True"){
-                location.href = "menu.html";
+                window.location.href = "configs.html";
             }
             else if (status.status_iq == "False"){
                 $('#login_txt').text("Usuario ou Senha incorreto")

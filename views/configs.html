@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="/eel.js"></script>
+    <title>Configuração</title>
+    <link href="bootstrap\bootstrap.min.css" rel="stylesheet">
+    <link href="bootstrap\custom.css" rel="stylesheet">
+    <link href="form-validation.css" rel="stylesheet">
+  </head>
+
+
+
+  <body class="bg-light">
+    <div class="background"></div>
+
+    <div class="login_container">
+
+        <div class="form-check form-check-inline">
+            <br>
+            <h1 class='title'>Configurações</h1>
+            
+            <br>
+
+            <div class="input-group mb-3">
+              <label class="input-group-text" for="inputGroupSelect01">Time Frame</label>
+              <select class="form-select" id="inputGroupSelect01">
+                <option id='option_default' selected value="1">1 minuto</option>
+                <option value="2">5 minuto</option>
+                <option value="3">15 minuto</option>
+              </select>
+            </div>
+
+            <div class="input-group mb-3">
+              <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">R$</a></li>
+                <li><a class="dropdown-item" href="#">%</a></li>
+              </ul>                
+              <input type="text" class="form-control" aria-label="Valor de entrada">
+            </div>
+
+            <br>
+
+            <div class="col-md">
+                <div class="form-floating">
+                  <select class="form-select" id="floatingSelectGrid" aria-label="Select estratgy">
+                    <option id='teste' selected>Fixo</option>
+                    <option value="1">Martingale</option>
+                    <option value="2">Soros</option>
+                  </select>
+                  <label for="floatingSelectGrid">Seleção de Gerenciamento</label>
+                </div>
+            </div>
+
+            <br>
+            <br>
+
+            <div class="input-group mb-3">
+                <span class="input-group-text">R$</span>
+                <input type="number" class="form-control" placeholder="Stop Win" aria-label="Stop Win" id='stop-win'>
+                <span class="input-group-text">R$</span>
+                <input type="number" class="form-control" placeholder="Stop Loss" aria-label="Stop Loss" id='stop-loss'>
+            </div>
+            <br>
+            <div>
+                <h4>Tipo de operação:</h4>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" checked>
+                  <label class="form-check-label" for="flexRadioDefault1">
+                    Treino
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" >
+                  <label class="form-check-label" for="flexRadioDefault2">
+                    Real
+                  </label>
+                </div>
+            </div>
+
+            <br>
+            <br>
+
+            <div>
+                <input type="radio" class="btn-check" name="options-outlined" id="danger-outlined" autocomplete="off">
+                <label class="btn btn-outline-danger" for="danger-outlined" onclick="logout();">Sair</label>
+
+                <input type="radio" class="btn-check" name="options-outlined" id="danger-outlined" autocomplete="off">
+                <label class="btn btn-outline-danger" for="danger-outlined" onclick="clear_fields();">Limpar</label>
+                
+                <input type="radio" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off" checked>
+                <label class="btn btn-outline-success" for="success-outlined" onclick="login_config_1();">Confirmar</label>
+            </div>
+
+    </div>
+
+  <body>
+
+
+    <script src="bootstrap\bootstrap.bundle.min.js"></script>
+    <script type="text/javascript">
+    //---------------------------------------------------------  
+      async function clear_fields(){
+        document.getElementById('stop-win').value = ''
+        document.getElementById('stop-loss').value = ''
+        document.getElementById('flexRadioDefault1').checked = true
+        document.getElementById('option_default').selected = true
+        document.getElementById('teste').selected = true
+      };
+
+      //---------------------------------------------------------  
+      async function logout(){
+        window.location.href = "index.html";
+      };
+      eel.expose(logout)        
+      //---------------------------------------------------------  
+      async function login_config_1(){
+          eel.bnt_config_confirmar(1,2)
+      };
+      eel.expose(login_config_1)
+      function login_config_1(status){
+          //var status = JSON.parse(status);
+          window.location.href = "configs2.html";
+          
+      }
+
+    </script>
+    <script src="form-validation.js"></script>
+  </body>
+
+</html>

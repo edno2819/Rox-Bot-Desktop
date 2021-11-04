@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="/eel.js"></script>
+    <title>Configuração</title>
+    <link href="bootstrap\bootstrap.min.css" rel="stylesheet">
+    <link href="bootstrap\custom.css" rel="stylesheet">
+    <link href="form-validation.css" rel="stylesheet">
+  </head>
+
+
+
+  <body class="bg-light">
+    <div class="background"></div>
+
+    <div class="login_container">
+
+        <div class="form-check form-check-inline">
+            <br>
+            <h1 class='title'>Configurações</h1>
+            
+            <br>
+
+            <div class="input-group mb-3">
+              <span class="input-group-text">Nome</span>
+              <input type="text" class="form-control" placeholder="" id='nome' disabled>
+              <span class="input-group-text">Saldo</span>
+              <input type="text" class="form-control" placeholder="" id='saldo' disabled>
+            </div>
+
+            <div class="input-group mb-3">
+              <span class="input-group-text">Delay</span>
+              <input type="number" class="form-control" placeholder="Delay" oninput="this.value =  Math.abs(this.value)*-1" >
+            </div>
+
+            <div class="input-group mb-3">
+              <label class="input-group-text" for="inputGroupSelect01">Seleção de Gerenciamento</label>
+              <select class="form-select" id="inputGroupSelect01">
+                <option id='teste' selected value="1">Fixo</option>
+                <option value="2">Martingale</option>
+                <option value="3">Estratégia</option>
+              </select>
+            </div>
+
+            <div class="input-group mb-3">
+              <span class="input-group-text" id='entrada'>Valor de Entrada</span>
+              <input type="number" class="form-control" placeholder="Entrada" aria-label="Entrada" id='entrada' oninput="this.value = Math.abs(this.value)">
+            </div>
+
+            <div class="input-group mb-3">
+              <label class="input-group-text" for="type_stop">Tipo de Stop</label>
+              <select class="form-select" id="type_stop" onchange='ajust_type_stop();'>
+                <option id='Stop_type_valor' selected value="R$">Valor</option>
+                <option value="%">Porcentagem</option>
+              </select>
+            </div>
+
+            <div class="input-group mb-3">
+                <span class="input-group-text" id='stop_type1'>R$</span>
+                <input type="number" class="form-control" placeholder="Stop Win" aria-label="Stop Win" id='stop-win' oninput="this.value = Math.abs(this.value)">
+                <span class="input-group-text" id='stop_type2'>R$</span>
+                <input type="number" class="form-control" placeholder="Stop Loss" aria-label="Stop Loss" id='stop-loss' oninput="this.value =  Math.abs(this.value)*-1">
+            </div>
+
+            <br>
+
+            <div>
+                <h4>Tipo de operação:</h4>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" checked>
+                  <label class="form-check-label" for="flexRadioDefault1">Treino</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2">
+                  <label class="form-check-label" for="flexRadioDefault2">Real</label>
+                </div>
+            </div>
+
+            <br>
+            <br>
+
+            <div>
+                <input type="radio" class="btn-check" name="options-outlined" id="danger-outlined" autocomplete="off">
+                <label class="btn btn-outline-danger" for="danger-outlined" onclick="logout();">Sair</label>
+
+                <input type="radio" class="btn-check" name="options-outlined" id="danger-outlined" autocomplete="off">
+                <label class="btn btn-outline-danger" for="danger-outlined" onclick="clear_fields();">Limpar</label>
+                
+                <input type="radio" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off" checked>
+                <label class="btn btn-outline-success" for="success-outlined" onclick="config_2();">START</label>
+            </div>
+
+    </div>
+
+  <body>
+
+
+    <script src="bootstrap\bootstrap.bundle.min.js"></script>
+    <script type="text/javascript">
+    //---------------------------------------------------------  
+      async function get_type_currence(){
+          eel.start_configs_1()
+      };
+      eel.expose(get_infos_init)
+      function get_infos_init(status){
+        var infos = JSON.parse(status);
+        globalThis.infos_glob = infos;
+        document.getElementById('nome').placeholder  = infos.name
+        document.getElementById('saldo').placeholder  = infos.balance
+
+      }
+      get_type_currence()
+
+    //---------------------------------------------------------  
+      async function ajust_type_stop(){
+        if (document.getElementById('type_stop').options[0].selected == true){
+          document.getElementById('stop_type1').innerHTML  = globalThis.infos_glob.currency_char
+          document.getElementById('stop_type2').innerHTML  = globalThis.infos_glob.currency_char
+        }
+        else{
+          document.getElementById('stop_type1').innerHTML  = '%'
+          document.getElementById('stop_type2').innerHTML  = '%'
+        }
+
+      }
+      
+    //---------------------------------------------------------  
+      async function clear_fields(){
+        document.getElementById('stop-win').value = ''
+        document.getElementById('stop-loss').value = ''
+        document.getElementById('flexRadioDefault1').checked = true
+        document.getElementById('ROX').selected = true
+        document.getElementById('teste').selected = true
+      };
+
+    //---------------------------------------------------------  
+      async function logout(){
+        window.location.href = "index.html";
+        eel.bnt_sair()
+      };
+      eel.expose(logout)        
+    //---------------------------------------------------------  
+      async function config_2(){
+          window.location.href = "run.html";
+          eel.bnt_config_confirmar(document.getElementById('stop-loss').value)
+      };
+
+    </script>
+    <script src="form-validation.js"></script>
+  </body>
+
+</html>

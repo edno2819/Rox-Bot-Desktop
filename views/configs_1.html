@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="/eel.js"></script>
+    <title>Configuração</title>
+    <link href="bootstrap\bootstrap.min.css" rel="stylesheet">
+    <link href="bootstrap\custom.css" rel="stylesheet">
+    <link href="form-validation.css" rel="stylesheet">
+  </head>
+
+
+
+  <body class="bg-light">
+    <div class="background"></div>
+
+    <div class="login_container">
+
+        <div class="form-check form-check-inline">
+            <br>
+            <h1 class='title'>Backteste</h1>
+            
+            <br>
+
+            <div class="input-group mb-3">
+              <label class="input-group-text" for="inputGroupSelect01">Estratégia</label>
+              <select class="form-select" id="inputGroupSelect01">
+                <option id='ROX' selected value="1">Estratégia ROX</option>
+              </select>
+            </div>
+
+            <div class="input-group mb-3">
+              <label class="input-group-text">Paridade</label>
+              <select class="form-select" id="list_assets">
+                <option selected value="1">Carregando ...</option>
+              </select>
+            </div>
+
+            <div class="input-group mb-3">
+              <label class="input-group-text">Time Frame</label>
+              <select class="form-select" id="list_time_frame">
+                <option selected value="1">1 Min</option>
+                <option value="5">5 Min</option>
+                <option value="15">15 Min</option>
+              </select>
+            </div>
+
+            <br>
+
+            <div>
+              <input type="radio" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off" checked>
+              <label class="btn btn-outline-success" for="success-outlined" onclick="catalogar();">Catalogar</label>
+            </div>
+
+            <br>
+            
+            <div class="table-wrapper-scroll-y my-custom-scrollbar">
+              <table class="table table-bordered table-striped mb-0">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Tempo</th>
+                    <th scope="col">Direção</th>
+                    <th scope="col">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+
+            <br>
+
+            <div>
+                <input type="radio" class="btn-check" name="options-outlined" id="danger-outlined" autocomplete="off">
+                <label class="btn btn-outline-danger" for="danger-outlined" onclick="logout();">Sair</label>
+                
+                <input type="radio" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off" checked>
+                <label class="btn btn-outline-success" for="success-outlined" onclick="config_1();">Continuar</label>
+            </div>
+    </div>
+
+  <body>
+
+
+    <script src="bootstrap\bootstrap.bundle.min.js"></script>
+    <script type="text/javascript">
+
+    //---------------------------------------------------------  
+    async function get_assets(){
+        eel.get_assets()
+      };
+      eel.expose(create_list_assets)  
+      function create_list_assets(result){
+
+        //var infos = JSON.parse(result);
+        var list = document.getElementById('list_assets')
+
+        let items = JSON.parse(result);
+
+        items.forEach(function (item) {
+          var option = document.createElement('option');
+          option.innerHTML = item;
+          option.value = item;
+          list.appendChild(option);
+
+        });
+        list.options[0].innerHTML = items[0];
+        list.options[0].value = items[0];
+        list.options[0].selected = true;
+      } 
+    
+      get_assets();
+    //---------------------------------------------------------  
+    async function catalogar(){
+        var list = document.getElementById('list_assets');
+        var time = document.getElementById('list_time_frame');
+        eel.bnt_catalogar(list.options[list.selectedIndex].value, time.options[time.selectedIndex].value)
+      };
+      eel.expose(creat_table_catalog)  
+      function creat_table_catalog(result){
+        var infos = JSON.parse(result);
+      }      
+    //---------------------------------------------------------  
+    async function logout(){
+        window.location.href = "index.html";
+        eel.bnt_sair()
+      };
+      eel.expose(logout)        
+    //---------------------------------------------------------  
+      async function config_1(){
+          window.location.href = "configs_2.html";
+          eel.bnt_config_confirmar()
+          // <tr>
+          //           <th scope="row">3</th>
+          //           <td>00:30</td>
+          //           <td>CALL</td>
+          //           <td>GALE 1</td>
+          //         </tr>
+      };
+    //---------------------------------------------------------  
+
+    </script>
+    <script src="form-validation.js"></script>
+  </body>
+
+</html>

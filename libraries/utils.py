@@ -44,3 +44,7 @@ def into_clock(clocks, dif):
         if zona[0] < const_time < zona[1] - dif:
             return True
     return False
+
+def to_json_js(dic):
+    dic = str(dic).replace("'", '"')
+    return dic

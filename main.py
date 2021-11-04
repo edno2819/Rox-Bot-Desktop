@@ -1,22 +1,12 @@
 from __future__ import print_function	
 import eel
 from models.login import *
-from models.configs import *
+from models.configs_1 import *
+from models.configs_2 import *
+from libraries.utils import to_json_js
 
 
 eel.init('views')
-teste = 0
-
-@eel.expose # USADO PARA FUNCAO SER VISTA NO JS
-def btn_save(name,phone,date,login,passw,email):
-    msg = 'save_register(name,phone,date,login,passw,email)'
-    eel.save_return(str(msg))
-
-
-@eel.expose
-def btn_recovery(email):
-    msg = ''
-    eel.reco_return(str(msg))
 
 
 @eel.expose
@@ -26,9 +16,19 @@ def btn_login(user_name, password):
     eel.login_return(str(result))
 
 @eel.expose
-def start_configs_1():
+def get_assets():
+    result = get_assets_py()
+    eel.create_list_assets(to_json_js(result))
+
+@eel.expose
+def bnt_catalogar(asset, time):
+    result = catalogar(asset, time)
+    eel.login_return(to_json_js(result))
+
+@eel.expose
+def start_configs_2():
     infos = get_infos()
-    return str(infos)
+    eel.get_infos_init(to_json_js(infos))
 
 @eel.expose
 def bnt_config_confirmar(stop_loss):

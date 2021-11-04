@@ -26,8 +26,7 @@
             <div class="input-group mb-3">
               <label class="input-group-text" for="inputGroupSelect01">Paridade</label>
               <select class="form-select" id="inputGroupSelect01">
-                <option selected>Choose...</option>
-                <option value="1">EUR/USD</option>
+                <option selected value="1">EUR/USD</option>
                 <option value="2">GBP/JPY</option>
                 <option value="3">AUD/CAS</option>
               </select>
@@ -36,23 +35,22 @@
             <div class="input-group mb-3">
               <label class="input-group-text" for="inputGroupSelect01">Time Frame</label>
               <select class="form-select" id="inputGroupSelect01">
-                <option selected>Choose...</option>
-                <option value="1">1 minuto</option>
-                <option value="2">5 minutos</option>
-                <option value="3">15 minutos</option>
+                <option selected value="1">1 Min</option>
+                <option value="2">5 Min</option>
+                <option value="3">15 Min</option>
               </select>
             </div>
 
             <div class="input-group mb-3">
                 <span class="input-group-text">Delay</span>
-                <input type="text" class="form-control" placeholder="Stop Win" aria-label="Stop Win">
+                <input type="number" class="form-control" placeholder="Delay" >
             </div>
 
             <br>
 
             <div>
               <input type="radio" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off" checked>
-              <label class="btn btn-outline-success" for="success-outlined" onclick="">Confirmar</label>
+              <label class="btn btn-outline-success" for="success-outlined" onclick="">Catalogar</label>
             </div>
 
             <br>
@@ -94,15 +92,11 @@
 
             <div>
                 <input type="radio" class="btn-check" name="options-outlined" id="danger-outlined" autocomplete="off">
-                <label class="btn btn-outline-danger" for="danger-outlined">Voltar</label>
-
-                <input type="radio" class="btn-check" name="options-outlined" id="danger-outlined" autocomplete="off">
-                <label class="btn btn-outline-danger" for="danger-outlined">Limpar</label>
+                <label class="btn btn-outline-danger" for="danger-outlined" onclick="back();">Voltar</label>
                 
                 <input type="radio" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off" checked>
-                <label class="btn btn-outline-success" for="success-outlined">Confirmar</label>
+                <label class="btn btn-outline-success" for="success-outlined">START</label>
             </div>
-
     </div>
 
   <body>
@@ -110,6 +104,13 @@
 
     <script src="bootstrap\bootstrap.bundle.min.js"></script>
     <script type="text/javascript">
+      console.log('teste')
+      
+      async function back(){
+        window.location.href = "configs.html";
+      };
+
+      eel.expose(logout)   
     </script>
     <script src="form-validation.js"></script>
   </body>

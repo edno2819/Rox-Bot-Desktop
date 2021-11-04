@@ -1,5 +1,5 @@
 from iqoptionapi.stable_api import IQ_Option
-import libraries.utils
+import libraries.utils as utils
 import time
 
 
@@ -109,10 +109,13 @@ class IqOption:
                 if check==True: return  round(win,2)
         else: return False
 
+    def close(self):
+        self.API.api.close()
+
 
 # t=IqOption()
 # t.conect('edno28@hotmail.com', '99730755ed')
-# t.change_balance('PRACTICE')
-# print('FDSFDSF')
-# velas=t.get_velas('EURUSD', 1, 1)
-# print(velas)
+# t.close()
+# print(t.API.check_connect())
+# t.API.api.close()
+# print(t.API.check_connect())

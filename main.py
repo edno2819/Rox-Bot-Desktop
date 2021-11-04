@@ -1,11 +1,11 @@
 from __future__ import print_function	
 import eel
-from models.login import login_user, login_session
+from models.login import *
 from models.configs import *
 
 
 eel.init('views')
-
+teste = 0
 
 @eel.expose # USADO PARA FUNCAO SER VISTA NO JS
 def btn_save(name,phone,date,login,passw,email):
@@ -25,17 +25,22 @@ def btn_login(user_name, password):
     result = '{'+f'"status_bot": "{result[0]}", "status_iq": "{result[1]}"' + '}'
     eel.login_return(str(result))
 
+@eel.expose
+def start_configs_1():
+    infos = get_infos()
+    return str(infos)
 
 @eel.expose
-def bnt_config_confirmar(user_name, password):
-    eel.login_return(str('4'))
+def bnt_config_confirmar(stop_loss):
+    global teste
+    teste = stop_loss
+
 
 @eel.expose
-def logout():
-    5
+def bnt_sair():
+    logout()
 
 
 
 
-
-eel.start("configs.html", size=(730,700))
+eel.start("index.html", size=(730,700))

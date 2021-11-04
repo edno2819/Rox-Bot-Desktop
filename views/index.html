@@ -15,78 +15,36 @@
 
     <div class="container">
         <div class="background"></div>
-
         <div class="login_container">
+
             <div class="title_login">
                 <h1 class="title" style="padding:0;">IQ Bot</h1>
             </div>
+
             <div class="login_label">
                 <label class="label_login">Login</label>
             </div>
+
             <div class="login_user">
                 <label for="user_login" class="label_input">Usuario:</label>
-                <input type="text" class="inputs" name="user_login" id="get_user_login" placeholder="josefrancisco9"><br>
+                <input type="text" class="inputs" name="user_login" id="get_user_login" placeholder="name@email.com"><br>
             </div>
+
             <div class="login_user">
                 <label for="user_login" class="label_input">Senha:</label>
                 <input type="password" class="inputs" name="user_login" id="get_user_password" placeholder="* * * * * * * * *">
             </div>
+
             <div class="buttons_container">
                 <label class="top_label" style="margin: 0 20px;">Ainda sem acesso ao Bot? <a href="#" onclick="recovery_pass('open');">Clique aqui</a></label>
                 <button class="buttons" onclick="login_user();">Confirmar</button>
             </div>
+
             <div class="login_user" style="text-align: center;width: 100%;">
                 <label class="label_input" id="login_txt" style="width: 100%;"></label>
             </div>
 
         </div>
-
-        <div class="new_register_container">
-            <div class="title_new"><h2 style="padding:0;">Novo Usuario</h2></div>
-            <div class="register_container">
-                <div class="box">
-                    <label for="user_name" class="label_input">Nome:</label>
-                    <input type="text" name="user_name" class="inputs" id="new_name" placeholder="José Francisco">
-                </div>
-
-                <div class="box">
-                    <label for="user_phone" class="label_input">Telefone:</label>
-                    <input type="tel" name="user_phone" class="inputs" id="new_phone" placeholder="99999999">
-                </div>
-
-                <div class="box">
-                    <label for="user_date" class="label_input">Nascido:</label>
-                    <input type="date" name="user_date" class="inputs" id="new_date">
-                    
-                </div>
-
-                <div class="box">
-                    <label for="user_new_login" class="label_input">Usuario:</label>
-                    <input type="text" name="user_new_login" class="inputs" id="new_login" placeholder="josefrancisco9">
-                </div>
-
-                <div class="box">
-                    <label for="user_new_password" class="label_input">Senha:</label>
-                    <input type="password" name="user_new_password" class="inputs" id="new_pass">
-                </div>
-                <div class="box">
-                    <label for="user_new_email" class="label_input">Email:</label>
-                    <input type="email" name="user_new_email" class="inputs" id="new_email" placeholder="jose@gmail.com">
-                </div>
-                <div class="user_logo">
-                    <img src="img/user.png" alt="user logo" class="user_logo"> 
-                </div>
-
-                <div class="box"><label class="label_input" id="return_register" style="width: 90%;"></label></div>
-
-                <div class="box">
-                    <button class="buttons" onclick="save_register_js();">SALVAR</button>
-                    <button class="buttons" onclick="new_container_anim('close');">FECHAR</button>
-                </div>
-            </div>
-
-        </div>
-
         <div class="recovery_container">
             <div class="title_new"><h2>Adesão de Plano</h2></div>
             <div class="p">
@@ -113,6 +71,7 @@
 
 
     <script type="text/javascript" >
+    //--------------------------------------------ONLY FUNCTIONS JS----------------------------------------------------------------------  
 
         function generateBarCode() 
         {
@@ -121,11 +80,12 @@
             $('#barcode').attr('src', url);
         }
     
-        // REGISTRO DE NOVO USUARIO
+        //REGISTRO DE NOVO USUARIO//---------------------------------------------------------  
         async function save_register_js(){
-            eel.btn_save($('#new_name').val(),$('#new_phone').val(),$('#new_date').val(),$('#new_login').val(),$('#new_pass').val(),$('#new_email').val())
+            eel.btn_save($('#new_name').val(),$('#new_phone').val(),$('#new_date').val(),
+            $('#new_login').val(),$('#new_pass').val(),$('#new_email').val())
         };
-        eel.expose(save_return); // USADO PARA PASSAR A FUNCAO PARA SER VISTA NO PYTHON
+        eel.expose(save_return); 
         function save_return(status){
             if (status == "sucesso"){
                 $('#return_register').text('Registro concluido com sucesso!');
@@ -140,12 +100,11 @@
             }
         };
 
-        // RECUPERAR SENHA
+        //RECUPERAR SENHA//---------------------------------------------------------  
         async function reco_pass_js(){
             $('#reco_label').text("Verificando email, aguarde...")
             eel.btn_recovery($('#get_email').val())
         };
-        
         eel.expose(reco_return)
         function reco_return(status){
             if (status == "sucesso"){
@@ -156,11 +115,10 @@
             }
         };
 
-        // LOGAR USUARIO
+        //LOGAR USUARIO//---------------------------------------------------------  
         async function login_user(){
             eel.btn_login($('#get_user_login').val(), $('#get_user_password').val())
         };
-
         eel.expose(login_return)
         function login_return(status){
             var status = JSON.parse(status);

@@ -10,4 +10,3 @@ def get_infos():
     balance = round(float(result['balance']),2)
     return {"currency_char":currency_char , "name":name, "balance":balance}
 
-    

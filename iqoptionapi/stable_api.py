@@ -501,10 +501,12 @@ class IQ_Option:
         self.api.candles.candles_data = None
         while True:
             try:
-                self.api.getcandles(
-                    OP_code.ACTIVES[ACTIVES], interval, count, endtime)
-                while self.check_connect and self.api.candles.candles_data == None:
-                    pass
+                self.api.getcandles(OP_code.ACTIVES[ACTIVES], interval, count, endtime)
+                for c in range(5000):
+                    if self.check_connect and self.api.candles.candles_data == None:
+                        pass
+                    else:
+                        break
                 if self.api.candles.candles_data != None:
                     break
             except:

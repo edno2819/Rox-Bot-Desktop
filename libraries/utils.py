@@ -48,3 +48,13 @@ def into_clock(clocks, dif):
 def to_json_js(dic):
     dic = str(dic).replace("'", '"')
     return dic
+
+def calculate_pavio(vela):
+    if vela[-1]==1 or vela[-1]==0:
+        pavio_top = vela[2] - vela[4]
+        pavio_bot = vela[1] - vela[3]
+    elif vela[-1]==-1:
+        pavio_top = vela[2] - vela[1]
+        pavio_bot = vela[4] - vela[3]
+    
+    return pavio_top, pavio_bot

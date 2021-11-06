@@ -104,10 +104,70 @@ class IqOption:
         self.API.api.close()
 
 
+def calculate_pavio(vela):
+    if vela[-1]==1 or vela[-1]==0:
+        pavio_top = vela[2] - vela[4]
+        pavio_bot = vela[1] - vela[3]
+    elif vela[-1]==-1:
+        pavio_top = vela[2] - vela[1]
+        pavio_bot = vela[4] - vela[3]
+    
+    return pavio_top, pavio_bot
+
 t=IqOption()
 t.conect('edno28@hotmail.com', '99730755ed')
-ve = t.get_velas('EURUSD', 10, 5)
-ve
+tp = t.get_velas('EURUSD-OTC', 20, 5)
+#pari = t.get_assets_open()
 
 
-def catalogacao(asset, time):...
+def catalogacao(asset:str, time:int, clock_init:str, level:int, taxa:float=0.15):
+    RESULT = {c:0 for c in range(level+1)}
+    RESULT[-1] = 0
+    RESULT['ENTRADAS'], RESULT['DIR'] = [], []
+    ve = t.get_velas(asset, 200, time)
+
+    day = '-'+'06'
+
+    for c in ve:
+        if day in c[0] and clock_init in c[0]:
+            print(c)
+            break
+    velas = ve[ve.index(c):]
+
+    '''PERCORRENDO AS VELAS'''
+    G=0
+    for c in range(len(velas)):
+
+        '''VERIFICANDO SE AS VELAS JA ACABARAM'''
+        if c+G+1+level > len(velas):
+            return RESULT
+
+        vela = velas[c+G]
+        pavio_top, pavio_bot = calculate_pavio(vela)
+        direc = 1 if pavio_top>pavio_bot else -1
+        
+        '''PAVIOS TECNICAMENTE EMPATADOS'''
+        if abs(pavio_top - pavio_bot)<=min(pavio_top, pavio_bot)*taxa:
+            direc  = vela[-1]#tratar tamanho da vela
+
+        '''VERIFICAR RESULTADO DA ENTRADA'''
+        if direc!=0:
+            RESULT['ENTRADAS'].append(vela)
+            RESULT['DIR'].append(direc)
+            velas_ope = velas[c+G+1:c+G+1+level]
+            velas_ope = [f[-1] for f in velas_ope]
+            win = -1 if direc not in velas_ope else velas_ope.index(direc)
+            if win==-1:
+                G+=level+1
+            elif win>0:
+                G+=win+1
+
+            RESULT[win] +=1
+
+cat = catalogacao('EURUSD-OTC', 5, '10:00:00', 4)
+cat
+
+            
+
+
+    

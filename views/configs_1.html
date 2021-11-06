@@ -36,13 +36,27 @@
                 <option selected value="1">Carregando ...</option>
               </select>
             </div>
-
-            <div class="input-group mb-3">
+            
+            <div class="input-group mb-3 form-inline">
               <label class="input-group-text">Time Frame</label>
               <select class="form-select" id="list_time_frame">
                 <option selected value="1">1 Min</option>
                 <option value="5">5 Min</option>
                 <option value="15">15 Min</option>
+              </select>
+
+              <label class="input-group-text" for="inputGroupSelect01">Gale Level</label>
+              <select class="form-select" id="list_nivel_martingale">
+                <option id='teste' selected value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
               </select>
             </div>
 
@@ -91,8 +105,9 @@
     async function get_assets(){
         eel.get_assets()
       };
-      eel.expose(create_list_assets)  
-      function create_list_assets(result){
+    eel.expose(create_list_assets)  
+    function create_list_assets(result){
+        console.log(result);
 
         //var infos = JSON.parse(result);
         var list = document.getElementById('list_assets')
@@ -116,12 +131,15 @@
     async function catalogar(){
         var list = document.getElementById('list_assets');
         var time = document.getElementById('list_time_frame');
-        eel.bnt_catalogar(list.options[list.selectedIndex].value, time.options[time.selectedIndex].value)
-      };
-      eel.expose(creat_table_catalog)  
-      function creat_table_catalog(result){
-        var infos = JSON.parse(result);
-      }      
+        var nivel = document.getElementById('list_nivel_martingale');
+        eel.bnt_catalogar(list.options[list.selectedIndex].value, time.options[time.selectedIndex].value, nivel.options[nivel.selectedIndex].value)
+    };
+    eel.expose(creat_table_catalog)  
+    function creat_table_catalog(result){
+        console.log(result);
+        globalThis.infos_t = result;
+        window.infos = JSON.parse(result);
+    }      
     //---------------------------------------------------------  
     async function logout(){
         window.location.href = "index.html";

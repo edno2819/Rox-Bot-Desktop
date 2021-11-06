@@ -21,9 +21,9 @@ def get_assets():
     eel.create_list_assets(to_json_js(result))
 
 @eel.expose
-def bnt_catalogar(asset, time):
-    result = catalogar(asset, time)
-    eel.login_return(to_json_js(result))
+def bnt_catalogar(asset, time, nivel):
+    result = catalogacao(asset, int(time), '10:00:00', int(nivel))
+    eel.creat_table_catalog(to_json_js(result))
 
 @eel.expose
 def start_configs_2():
@@ -41,6 +41,6 @@ def bnt_sair():
     logout()
 
 
-
+# exibir erro no backtest
 
 eel.start("index.html", size=(730,700))

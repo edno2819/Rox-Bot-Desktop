@@ -1,5 +1,7 @@
 from libraries.run import MAIN
-from libraries.utils import calculate_pavio
+from libraries.utils import calculate_pavio, time_now
+from datetime import datetime
+
 
  
 
@@ -17,16 +19,15 @@ def catalogar(asset, time):
 
 
 def catalogacao(asset:str, time:int, clock_init:str, level:int, taxa:float=0.15):
-    RESULT = {c:0 for c in range(level+1)}
-    RESULT[-1] = 0
-    RESULT['ENTRADAS'], RESULT['DIR'] = [], []
+    RESULT = {str(c):0 for c in range(level+1)}
+    RESULT['-1'] = 0
+    RESULT['ENTRADAS'], RESULT['DIR'], RESULT['GALE'] = [], [], []
     ve = MAIN.get_velas(asset, int(1000/time), time)
 
-    day = '-'+'06'#pegar data
+    day = '-'+time_now('%d')+' '
 
     for c in ve:
         if day in c[0] and clock_init in c[0]:
-            print(c)
             break
     velas = ve[ve.index(c):]
 
@@ -36,6 +37,13 @@ def catalogacao(asset:str, time:int, clock_init:str, level:int, taxa:float=0.15)
 
         '''VERIFICANDO SE AS VELAS JA ACABARAM'''
         if c+G+1+level > len(velas):
+            RESULT['Derrota'] = RESULT['-1']
+            RESULT['RESULTS'] = [RESULT[str(c)] for c in range(level+1)]
+            RESULT['RESULTS'].append(RESULT['-1'])
+            RESULT['COLS'] = [str(c) for c in range(level+1)]
+            RESULT['COLS'].append('Loss')
+            #'0'+str(int(RESULT['ENTRADAS'][0][11:13])-3) if len(str(int(RESULT['ENTRADAS'][0][11:13])-3))==1 else str(int(RESULT['ENTRADAS'][0][11:13])-3)
+            RESULT['ENTRADAS'] = [str(datetime.strptime(date[11:], '%H:%M:%S') - datetime.strptime('03:00:00', '%H:%M:%S')) for date in RESULT['ENTRADAS']]
             return RESULT
 
         vela = velas[c+G]
@@ -58,4 +66,6 @@ def catalogacao(asset:str, time:int, clock_init:str, level:int, taxa:float=0.15)
             elif win>0:
                 G+=win+1
 
-            RESULT[win] +=1
+            RESULT[str(win)] +=1
+            RESULT['GALE'].append('Loss' if win==-1 else win)
+        

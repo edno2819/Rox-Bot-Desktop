@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-br">
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" charset=utf-8>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="text/javascript" src="/eel.js"></script>
     <title>Configuração</title>
@@ -69,17 +69,29 @@
 
             <br>
             
-            <div class="table-wrapper-scroll-y my-custom-scrollbar">
-              <table class="table table-bordered table-striped mb-0">
+            <div class="table-responsive-xl table-wrapper-scroll-y my-custom-scrollbar">
+              <table class="table table-bordered table-striped mb-0" >
                 <thead>
-                  <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Tempo</th>
+                  <tr id='table_catalog_result_head'>
+                  </tr> 
+                </thead>
+                <tbody id='table_catalog_result'>
+                </tbody>
+              </table>
+            </div>
+
+            <br>
+
+            <div class="table-responsive-xl table-wrapper-scroll-y my-custom-scrollbar"  style="height: 250px; overflow: scroll; overflow-x: hidden;">
+              <table class="table table-bordered table-striped mb-0" >
+                <thead>
+                  <tr> 
+                    <th scope="col">Horário</th>
                     <th scope="col">Direção</th>
-                    <th scope="col">Status</th>
+                    <th scope="col">GALE</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody id='table_catalog'>
                 </tbody>
               </table>
             </div>
@@ -136,9 +148,57 @@
     };
     eel.expose(creat_table_catalog)  
     function creat_table_catalog(result){
-        console.log(result);
-        globalThis.infos_t = result;
-        window.infos = JSON.parse(result);
+        result = JSON.parse(result)
+        globalThis.infos_t = result
+        //var result = globalThis.infos_t
+
+        //HEAD TABELA1
+        var table_head = document.getElementById('table_catalog_result_head');
+        result.COLS.forEach(function (elemento){
+          let item = document.createElement('th');
+          item.scope = 'col'
+          item.textContent = elemento;
+          table_head.appendChild(item);
+        })
+
+        //ROW TABELA1   
+        var table_result = document.getElementById('table_catalog_result');
+        let row_table1 = document.createElement('tr')
+        result.RESULTS.forEach(function (elemento){
+          let resul = document.createElement('td');
+          resul.textContent = elemento;
+          row_table1.appendChild(resul);
+        })
+        table_result.appendChild(row_table1)
+
+        //'''TABELA 2'''
+        var table_entradas = document.getElementById('table_catalog');
+        for(var c=0; c<result.ENTRADAS.length; c++){
+          let row = document.createElement('tr')
+
+          let clock = document.createElement('td');
+          let direc = document.createElement('td');
+          let gale = document.createElement('td');
+
+          clock.textContent = result.ENTRADAS[c];
+          gale.textContent = result.GALE[c];
+          if (result.DIR[c]==-1){
+            direc.textContent = 'V'
+            direc.style =  "color:red;"
+          }else{
+            direc.textContent = 'ꓥ'
+            direc.style =  "color:green;"
+          }
+
+          row.appendChild(clock);
+          row.appendChild(direc);
+          row.appendChild(gale);
+
+          table_entradas.appendChild(row)
+        }
+
+
+        
     }      
     //---------------------------------------------------------  
     async function logout(){
@@ -147,16 +207,6 @@
       };
       eel.expose(logout)        
     //---------------------------------------------------------  
-      async function config_1(){
-          window.location.href = "configs_2.html";
-          eel.bnt_config_confirmar()
-          // <tr>
-          //           <th scope="row">3</th>
-          //           <td>00:30</td>
-          //           <td>CALL</td>
-          //           <td>GALE 1</td>
-          //         </tr>
-      };
     //---------------------------------------------------------  
 
     </script>

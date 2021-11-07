@@ -1,7 +1,6 @@
 from datetime import datetime
 from dateutil import tz
 import time, sys
-import csv
 
 def retry(func, loops, erro, **kwargs):
     for _ in range(loops):
@@ -12,15 +11,14 @@ def retry(func, loops, erro, **kwargs):
             pass
     return False
 
+def time_now(formato='%H:%M:%S'):
+    return datetime.now().strftime(formato)
+
 def timestamp_converter(x): 
 	hora = datetime.strptime(datetime.utcfromtimestamp(x).strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')
 	hora = hora.replace(tzinfo=tz.gettz('GMT'))
 	
 	return str(hora)[:-6]  
-
-def time_now():
-    #return (datetime.now().hour*3600)+datetime.now().minute*60+datetime.now().second
-    return datetime.now().strftime('%H:%M:%S')
 
 def contador():
     while True:

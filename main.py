@@ -22,7 +22,7 @@ def get_assets():
 
 @eel.expose
 def bnt_catalogar(asset, time, nivel):
-    result = catalogacao(asset, int(time), '10:00:00', int(nivel))
+    result = catalogacao(asset, int(time), '03:00:00', int(nivel))
     eel.creat_table_catalog(to_json_js(result))
 
 @eel.expose

@@ -1,9 +1,7 @@
-from libraries.run import MAIN
+from libraries.iq_global import *
 from libraries.utils import calculate_pavio, time_now
-from datetime import datetime
+from datetime import datetime, timedelta
 
-
- 
 
  
 def get_assets_py():
@@ -26,10 +24,12 @@ def catalogacao(asset:str, time:int, clock_init:str, level:int, taxa:float=0.15)
 
     day = '-'+time_now('%d')+' '
 
+    axo = False
     for c in ve:
         if day in c[0] and clock_init in c[0]:
+            axo = True
             break
-    velas = ve[ve.index(c):]
+    velas = ve[ve.index(c):] if axo else ve
 
     '''PERCORRENDO AS VELAS'''
     G=0
@@ -42,8 +42,8 @@ def catalogacao(asset:str, time:int, clock_init:str, level:int, taxa:float=0.15)
             RESULT['RESULTS'].append(RESULT['-1'])
             RESULT['COLS'] = [str(c) for c in range(level+1)]
             RESULT['COLS'].append('Loss')
-            #'0'+str(int(RESULT['ENTRADAS'][0][11:13])-3) if len(str(int(RESULT['ENTRADAS'][0][11:13])-3))==1 else str(int(RESULT['ENTRADAS'][0][11:13])-3)
-            RESULT['ENTRADAS'] = [str(datetime.strptime(date[11:], '%H:%M:%S') - datetime.strptime('03:00:00', '%H:%M:%S')) for date in RESULT['ENTRADAS']]
+            #RESULT['ENTRADAS'] = [str(datetime.strptime(date[11:], '%H:%M:%S') - datetime.strptime('03:00:00', '%H:%M:%S')) for date in RESULT['ENTRADAS']]
+            RESULT['ENTRADAS'] = [str(datetime.strptime(date, '%Y-%m-%d %H:%M:%S') - timedelta(hours=3, minutes=0)) for date in RESULT['ENTRADAS']]
             return RESULT
 
         vela = velas[c+G]
@@ -68,4 +68,6 @@ def catalogacao(asset:str, time:int, clock_init:str, level:int, taxa:float=0.15)
 
             RESULT[str(win)] +=1
             RESULT['GALE'].append('Loss' if win==-1 else win)
-        
+    
+def set_variables_configs1(asset, time, nivel):
+    MAIN_RUN.set_configs({'par':asset, 'TIME_OPERATION':int(time), 'type_operactin':'DIGITAL', 'nivel':int(nivel)})

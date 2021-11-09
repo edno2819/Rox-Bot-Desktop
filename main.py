@@ -16,7 +16,7 @@ def btn_login(user_name, password):
     eel.login_return(str(result))
 
 @eel.expose
-def get_assets():
+def get_assets(): 
     result = get_assets_py()
     eel.create_list_assets(to_json_js(result))
 
@@ -31,16 +31,18 @@ def start_configs_2():
     eel.get_infos_init(to_json_js(infos))
 
 @eel.expose
-def bnt_config_confirmar(stop_loss):
-    global teste
-    teste = stop_loss
-
+def bnt_config_confirmar(asset, time, gale):
+    set_variables_configs1(asset, time, gale)
+    return 
 
 @eel.expose
 def bnt_sair():
     logout()
 
+@eel.expose
+def bnt_config_confirma2():
+    set_variables_configs2()
 
-# exibir erro no backtest
+
 
 eel.start("index.html", size=(730,700))

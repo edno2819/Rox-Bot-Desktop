@@ -63,7 +63,7 @@
             <br>
 
             <div>
-              <input type="radio" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off" checked>
+              <input type="radio" class="btn-check" id="success-outlined" autocomplete="off" checked>
               <label class="btn btn-outline-success" for="success-outlined" onclick="catalogar();">Catalogar</label>
             </div>
 
@@ -102,8 +102,8 @@
                 <input type="radio" class="btn-check" name="options-outlined" id="danger-outlined" autocomplete="off">
                 <label class="btn btn-outline-danger" for="danger-outlined" onclick="logout();">Sair</label>
                 
-                <input type="radio" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off" checked>
-                <label class="btn btn-outline-success" for="success-outlined" onclick="config_1();">Continuar</label>
+                <input type="radio" class="btn-check" name="options-outlined" id="go_configs_2" autocomplete="off">
+                <label class="btn btn-outline-success" for="go_configs_2" onclick="go_configs2();">Continuar</label>
             </div>
     </div>
 
@@ -154,6 +154,11 @@
 
         //HEAD TABELA1
         var table_head = document.getElementById('table_catalog_result_head');
+
+        while (table_head.hasChildNodes()) {  
+          table_head.removeChild(table_head.firstChild);
+        }
+
         result.COLS.forEach(function (elemento){
           let item = document.createElement('th');
           item.scope = 'col'
@@ -163,6 +168,11 @@
 
         //ROW TABELA1   
         var table_result = document.getElementById('table_catalog_result');
+
+        while (table_result.hasChildNodes()) {  
+          table_result.removeChild(table_result.firstChild);
+        }
+
         let row_table1 = document.createElement('tr')
         result.RESULTS.forEach(function (elemento){
           let resul = document.createElement('td');
@@ -171,8 +181,16 @@
         })
         table_result.appendChild(row_table1)
 
+        
+
         //'''TABELA 2'''
         var table_entradas = document.getElementById('table_catalog');
+
+        // REMOVE
+        while (table_entradas.hasChildNodes()) {  
+          table_entradas.removeChild(table_entradas.firstChild);
+        }
+
         for(var c=0; c<result.ENTRADAS.length; c++){
           let row = document.createElement('tr')
 
@@ -196,18 +214,22 @@
 
           table_entradas.appendChild(row)
         }
-
-
-        
     }      
     //---------------------------------------------------------  
     async function logout(){
         window.location.href = "index.html";
         eel.bnt_sair()
       };
-      eel.expose(logout)        
-    //---------------------------------------------------------  
-    //---------------------------------------------------------  
+      //---------------------------------------------------------  
+    async function go_configs2(){
+        var list = document.getElementById('list_assets');
+        var time = document.getElementById('list_time_frame');
+        var nivel = document.getElementById('list_nivel_martingale');
+        eel.bnt_config_confirmar(list.options[list.selectedIndex].value, time.options[time.selectedIndex].value, nivel.options[nivel.selectedIndex].value)
+        
+        window.location.href = "configs_2.html";
+      };
+      //---------------------------------------------------------  
 
     </script>
     <script src="form-validation.js"></script>

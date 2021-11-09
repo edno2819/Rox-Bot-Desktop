@@ -1,5 +1,5 @@
 from libraries.google_sheets import get_data_sheet
-from libraries.run import MAIN
+from libraries.iq_global import MAIN
 
 USERS = get_data_sheet()
  

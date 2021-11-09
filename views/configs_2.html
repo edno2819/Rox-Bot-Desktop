@@ -33,11 +33,11 @@
 
             <div class="input-group mb-3">
               <span class="input-group-text">Delay</span>
-              <input type="number" class="form-control" placeholder="Delay" oninput="this.value =  Math.abs(this.value)*-1" >
+              <input type="number" class="form-control" id='delay' placeholder="Delay" oninput="this.value =  Math.abs(this.value)*-1" >
             </div>
 
             <div class="input-group mb-3">
-              <span class="input-group-text" id='entrada'>Valor de Entrada</span>
+              <span class="input-group-text">Valor de Entrada</span>
               <input type="number" class="form-control" placeholder="Entrada" aria-label="Entrada" id='entrada' oninput="this.value = Math.abs(this.value)">
             </div>
 
@@ -80,8 +80,8 @@
                 <input type="radio" class="btn-check" name="options-outlined" id="danger-outlined" autocomplete="off">
                 <label class="btn btn-outline-danger" for="danger-outlined" onclick="clear_fields();">Limpar</label>
                 
-                <input type="radio" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off" checked>
-                <label class="btn btn-outline-success" for="success-outlined" onclick="config_2();">START</label>
+                <input type="radio" class="btn-check" name="options-outlined" id="go_run" autocomplete="off" checked>
+                <label class="btn btn-outline-success" for="go_run" onclick="go_run();">Confirmar</label>
             </div>
 
     </div>
@@ -134,10 +134,17 @@
     //---------------------------------------------------------  
   
     //---------------------------------------------------------  
-      async function config_2(){
-          window.location.href = "run.html";
-          eel.bnt_config_confirmar()
-      };
+    async function go_run(){
+        var entrada = document.getElementById('entrada');
+        var delay = document.getElementById('delay');
+        var type_stop = document.getElementById('stop_type1')
+        var stop_win = document.getElementById('stop-win');
+        var stop_loss = document.getElementById('stop-loss');
+        var type_operation = document.getElementById('flexRadioDefault1');
+        eel.bnt_config_confirmar2(list.options[list.selectedIndex].value, time.options[time.selectedIndex].value, nivel.options[nivel.selectedIndex].value)
+        
+        window.location.href = "run.html";
+    };
 
     </script>
     <script src="form-validation.js"></script>

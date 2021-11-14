@@ -40,9 +40,19 @@ def bnt_sair():
     logout()
 
 @eel.expose
-def bnt_config_confirma2():
-    set_variables_configs2()
+def bnt_config_confirmar2(entrada, delay, stop_win, stop_loss, type_operation, type_stop):
+    set_variables_configs2(entrada, delay, stop_win, stop_loss, type_operation, type_stop)
 
+def teste(infos):
+    eel.refresh_operation(to_json_js(infos))
+
+@eel.expose
+def bnt_iniciar():
+    start_operation()
+
+@eel.expose
+def bnt_parar():
+    stop_operation()
 
 
 eel.start("index.html", size=(730,700))

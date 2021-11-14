@@ -3,6 +3,7 @@ from libraries.strategys import Strategy
 from libraries.managementes import Management
 import time
 
+#{'TIME_OPERATION': 1, 'delay': None, 'entrada': '15', 'type_stop': 'porcent', 'ASSET': 'NZDUSD-OTC', 'type_operation': 'PRACTICE', 'stop_win': 5.0, 'LEVEL': 1, 'stop_loss': -9.0, 'BINA_DINA': 'DIGITAL'}
 
 class MainOperation:
 
@@ -13,7 +14,7 @@ class MainOperation:
         self.configs = {}
     
     def set_configs(self, configs):
-        self.configs = {k: self.configs.get(k, 0) + configs.get(k, 0) for k in set(self.configs) | set(configs)}
+        self.configs = {k: configs[k] if k in configs.keys() else self.configs[k]  for k in set(self.configs) | set(configs)}
 
     def setup_start(self) -> None:
         self.sets_functions()

@@ -50,9 +50,9 @@
             </div>
 
             <div class="input-group mb-3">
-                <span class="input-group-text" id='stop_type1'>R$</span>
+                <span class="input-group-text" id='stop_type1'>%</span>
                 <input type="number" class="form-control" placeholder="Stop Win" aria-label="Stop Win" id='stop-win' oninput="this.value = Math.abs(this.value)">
-                <span class="input-group-text" id='stop_type2'>R$</span>
+                <span class="input-group-text" id='stop_type2'>%</span>
                 <input type="number" class="form-control" placeholder="Stop Loss" aria-label="Stop Loss" id='stop-loss' oninput="this.value =  Math.abs(this.value)*-1">
             </div>
 
@@ -135,15 +135,29 @@
   
     //---------------------------------------------------------  
     async function go_run(){
-        var entrada = document.getElementById('entrada');
-        var delay = document.getElementById('delay');
-        var type_stop = document.getElementById('stop_type1')
-        var stop_win = document.getElementById('stop-win');
-        var stop_loss = document.getElementById('stop-loss');
-        var type_operation = document.getElementById('flexRadioDefault1');
-        eel.bnt_config_confirmar2(list.options[list.selectedIndex].value, time.options[time.selectedIndex].value, nivel.options[nivel.selectedIndex].value)
-        
-        window.location.href = "run.html";
+      var entrada = document.getElementById('entrada');
+      var delay = document.getElementById('delay');
+      var type_stop = document.getElementById('stop_type1')
+      var stop_win = document.getElementById('stop-win');
+      var stop_loss = document.getElementById('stop-loss');
+      
+      if(document.getElementById('flexRadioDefault1').checked==true){
+        var type_operation = 'PRACTICE'
+      }
+      else{
+        var type_operation = 'REAL'
+      }
+      
+      if(document.getElementById('type_stop').options[0].selected==true){
+        var type_stop = 'value'
+      }
+      else{
+        var type_stop = 'porcent'
+      }
+      
+      //console.log(entrada.value, delay.value, stop_win.value, stop_loss.value, type_operation, type_stop);
+      eel.bnt_config_confirmar2(entrada.value, delay.delay, stop_win.value, stop_loss.value, type_operation, type_stop)
+      window.location.href = "run.html";
     };
 
     </script>

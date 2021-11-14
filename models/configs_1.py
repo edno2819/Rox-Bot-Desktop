@@ -69,5 +69,6 @@ def catalogacao(asset:str, time:int, clock_init:str, level:int, taxa:float=0.15)
             RESULT[str(win)] +=1
             RESULT['GALE'].append('Loss' if win==-1 else win)
     
+    
 def set_variables_configs1(asset, time, nivel):
-    MAIN_RUN.set_configs({'par':asset, 'TIME_OPERATION':int(time), 'type_operactin':'DIGITAL', 'nivel':int(nivel)})
+    MAIN_RUN.set_configs({'ASSET':asset, 'TIME_OPERATION':int(time), 'BINA_DINA':'DIGITAL', 'LEVEL':int(nivel)})

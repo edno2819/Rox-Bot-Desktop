@@ -10,5 +10,5 @@ def get_infos():
     balance = round(float(result['balance']),2)
     return {"currency_char":currency_char , "name":name, "balance":balance}
 
-def set_variables_configs2():
-    MAIN_RUN.set_configs({})
+def set_variables_configs2(entrada, delay, stop_win, stop_loss, type_operation, type_stop):
+    MAIN_RUN.set_configs({'entrada':entrada, 'delay':delay, 'stop_win':float(stop_win), 'stop_loss':float(stop_loss), 'type_operation':type_operation, 'type_stop':type_stop})

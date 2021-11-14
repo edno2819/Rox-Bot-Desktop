@@ -76,18 +76,17 @@
       var status_start=false;
 
       //---------------------------------------------------------  
-      async function get_type_currence(){
-            eel.start_configs_2()
+      async function set_run_infos(){
+            eel.set_run_infos()
         };
-        eel.expose(get_infos_init)
-        function get_infos_init(status){
+        eel.expose(get_infos_run)
+        function get_infos_run(status){
           var infos = JSON.parse(status);
           globalThis.infos_glob = infos;
           document.getElementById('nome').placeholder  = infos.name
           document.getElementById('saldo').placeholder  = infos.balance
-
         }
-        get_type_currence()
+        set_run_infos()
       //---------------------------------------------------------  
       eel.expose(refresh_operation)  
       function refresh_operation(result){

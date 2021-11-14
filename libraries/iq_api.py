@@ -3,13 +3,16 @@ import libraries.utils as utils
 import time
 
 
-class IqOption:
-        
+class IqOption:        
     def conect(self, conta, senha):
         self.API = IQ_Option(conta, senha)
         self.API.connect()
-        if self.API.check_connect(): return True
-        else: return False
+        self.type =='PRACTICE'
+        
+        if self.API.check_connect(): 
+            return True
+        else: 
+            return False
 
     def change_balance(self, type='PRACTICE'):
         '''PRACTICE / REAL'''

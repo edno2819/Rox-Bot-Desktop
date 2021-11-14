@@ -3,6 +3,7 @@ import eel
 from models.login import *
 from models.configs_1 import *
 from models.configs_2 import *
+from models.run import *
 from libraries.utils import to_json_js
 
 
@@ -45,6 +46,12 @@ def bnt_config_confirmar2(entrada, delay, stop_win, stop_loss, type_operation, t
 
 def teste(infos):
     eel.refresh_operation(to_json_js(infos))
+
+
+@eel.expose
+def set_run_infos():
+    infos = get_infos_run()
+    eel.get_infos_run(to_json_js(infos))
 
 @eel.expose
 def bnt_iniciar():

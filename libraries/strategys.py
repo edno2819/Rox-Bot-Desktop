@@ -33,10 +33,6 @@ class Strategy:
     def __init__(self, iq) -> None:
         self.iq=iq
         self.STRATEGYS={
-                        'MH1 MINORIA':self.mhi_minoria, 
-                        'MH1 MAIORIA':self.mhi_maioria, 
-                        'TORRES GEMEAS':self.torres_gemeas, 
-                        '3 MOSQUETEIROS':self.tres_mosqueteiros,
                         'MODO SEGMENTO': self.modo_segmento
                         }
 

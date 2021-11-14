@@ -37,12 +37,13 @@ def catalogacao(asset:str, time:int, clock_init:str, level:int, taxa:float=0.15)
 
         '''VERIFICANDO SE AS VELAS JA ACABARAM'''
         if c+G+1+level > len(velas):
+            
+            '''TRATANDO O RESULTADO PARA ENVIO'''
             RESULT['Derrota'] = RESULT['-1']
             RESULT['RESULTS'] = [RESULT[str(c)] for c in range(level+1)]
             RESULT['RESULTS'].append(RESULT['-1'])
             RESULT['COLS'] = [str(c) for c in range(level+1)]
             RESULT['COLS'].append('Loss')
-            #RESULT['ENTRADAS'] = [str(datetime.strptime(date[11:], '%H:%M:%S') - datetime.strptime('03:00:00', '%H:%M:%S')) for date in RESULT['ENTRADAS']]
             RESULT['ENTRADAS'] = [str(datetime.strptime(date, '%Y-%m-%d %H:%M:%S') - timedelta(hours=3, minutes=0)) for date in RESULT['ENTRADAS']]
             return RESULT
 

@@ -1,7 +1,10 @@
 from datetime import datetime
 from libraries.iq_api import IqOption
-from libraries.utils import calculate_pavio, time_now
+from libraries.utils import calculate_pavio
 import time
+from main import send_infos_bet
+from libraries.thread_class import Thread
+
 
 
 def media_movel(velas, step):
@@ -38,23 +41,30 @@ class Strategy:
     }
 
     def __init__(self, iq) -> None:
-        self.iq=iq
-        self.STRATEGYS={'MODO SEGMENTO': self.modo_segmento }
-        
+        self.iq=iq        
     
     def set_delay(self, delay:int):
         delay_seconds = ((60 + delay)/100)
         for key in self.TIMES.keys():
             self.TIMES[key] = [value + delay_seconds for value in self.TIMES[key]]
+    
+    def get_vela_for_time(self, velas, minute):
+        for vela in velas:
+            if vela[0][15]==minute:
+                return vela
+
+        return velas[-1]
+            
 
 
     def modo(self, par, taxa_dif_vela=0.1) -> str:
             while True:
                 time.sleep(0.2)
                 if wait_time(self.TIMES[self.time]):
-
+                    
+                    minute = ((datetime.now()).strftime('%M'))[1:]
                     velas_=self.iq.get_velas(par, 2, self.time)
-                    vela=[velas_[0]]
+                    vela = self.get_vela_for_time(velas_, minute)
 
                     pavio_top, pavio_bot = calculate_pavio(vela)
                     direc = 1 if pavio_top>pavio_bot else -1
@@ -75,7 +85,6 @@ class MainOperation:
     def __init__(self, iq_instance) -> None:
         self.strategy = Strategy(iq_instance)
         self.iq = iq_instance
-        #self.manager = Management()
         self.configs = {'TIME_OPERATION': 1, 'delay': -2, 'entrada': 15, 'type_stop': 'porcent', 'ASSET': 'NZDUSD-OTC', 'type_operation': 'PRACTICE', 'stop_win': 5.0, 'LEVEL': 1, 'stop_loss': -9.0, 'BINA_DINA': 'DIGITAL'}
 
     def set_configs(self, configs):
@@ -108,29 +117,37 @@ class MainOperation:
     def check_result(self, id):
         pass
 
-    def send_bet_to_gui(self):
-        pass
+    def send_bet_to_gui(self, direc, level):
+        def format_sinal():
+            clock = datetime.now().strftime('%H:%M:%S')
+            send_infos_bet({'clock':clock, 'direc':direc, 'level':level})
+
+        #Thread(target=format_sinal).start()
+        
 
         
     def run(self):
-        for level in self.level:
+        for level in range(self.level):
             direc = self.strategy.modo(self.asset)
-            self.make_bet(direc)
-            self.send_bet_to_gui(direc)
-            result = self.check_result(direc)
+            self.make_bet(direc, level)
+            self.send_bet_to_gui(direc, level)
+            result = self.check_result()
 
-            if result=='Loss':
+            if result=='Loss':...
             
-            elif result=='win':
+            elif result=='win':...
             
-            elif result=='empate':
+            elif result=='empate':...
             
             else:
                 print('tratar erro')
 
         
 
-
+# {'0': 29, '1': 16, '2': 3, '3': 3, '4': 0, '-1': 3, 
+# 'ENTRADAS': ['2021-11-16 00:00:00', '2021-11-16 00:05:00', '2021-11-16 00:20:00', '2021-11-16 00:35:00', '2021-11-16 00:40:00', '2021-11-16 00:45:00', '2021-11-16 01:00:00', '2021-11-16 01:05:00', '2021-11-16 01:10:00', ...], 
+# 'DIR': [1, 1, -1, -1, -1, -1, -1, -1, -1, ...], 'GALE': [0, 1, 1, 0, 0, 1, 0, 0, 1, ...], 'Derrota': 3, 'RESULTS': [29, 16, 3, 3, 0, 3], 
+# 'COLS': ['0', '1', '2', '3', '4', 'Loss']}
 
 #{'TIME_OPERATION': 1, 'delay': None, 'entrada': '15', 'type_stop': 'porcent', 'ASSET': 'NZDUSD-OTC', 
 # 'type_operation': 'PRACTICE', 'stop_win': 5.0, 'LEVEL': 1, 'stop_loss': -9.0, 'BINA_DINA': 'DIGITAL'}

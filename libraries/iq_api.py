@@ -7,7 +7,7 @@ class IqOption:
     def conect(self, conta, senha):
         self.API = IQ_Option(conta, senha)
         self.API.connect()
-        self.type =='PRACTICE'
+        self.type ='PRACTICE'
         
         if self.API.check_connect(): 
             return True

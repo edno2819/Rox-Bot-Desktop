@@ -1,5 +1,7 @@
+from libraries.utils import calculate_pavio
 from datetime import datetime
 import time
+
 
 
 def media_movel(velas, step):
@@ -25,115 +27,50 @@ def filter_doji(velas:list):
             velas.remove(0)
     except ValueError: return velas
     
-
+def RSI(nivel):...
 
 class Strategy:
-    SEGMENTO=0
+    SEGMENTO, time = 0, 0
+    TIMES = {
+        1:[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        5:[4, 9],
+        15:[4, 9],
+    }
 
     def __init__(self, iq) -> None:
-        self.iq=iq
-        self.STRATEGYS={
-                        'MODO SEGMENTO': self.modo_segmento
-                        }
+        self.iq=iq        
+    
+    def set_delay(self, delay:int):
+        delay_seconds = ((60 + delay)/100)
+        for key in self.TIMES.keys():
+            self.TIMES[key] = [value + delay_seconds for value in self.TIMES[key]]
+    
+    def get_vela_for_time(self, velas, minute):
+        for vela in velas:
+            if vela[0][15]==minute:
+                return vela
+
+        return velas[-1]
+            
 
 
-    def mhi_minoria(self, par, time_out=1) -> tuple:
-        while True:
-            time.sleep(0.2)           
-            if  wait_time([4.58, 4.59, 9.58, 9.59]):
-
-                velas=self.iq.get_velas(par, 9, time_out)
-                velas=filter_doji([vela[-1] for vela in velas])
-                velas=[velas[0], velas[1], velas[2]]
-
-                if sum(velas)>=1:
-                    return 'PUT', 'GREEN'
-                elif sum(velas)<=-1:
-                    return 'CALL','RED'
-
-
-    def mhi_maioria(self, par, time_out=1) -> tuple:
-        while True:
-            time.sleep(0.2)           
-            if  wait_time([4.58, 4.59, 9.58, 9.59]):
-
-                velas=self.iq.get_velas(par, 9, time_out)
-                velas=filter_doji([vela[-1] for vela in velas])
-                velas=[velas[0], velas[1], velas[2]]
-
-                if sum(velas)>=1:
-                    return 'CALL', 'GREEN'
-                elif sum(velas)<=-1:
-                    return 'PUT','RED'
-                
-
-    def torres_gemeas(self, par) -> tuple:
-        while True:
-            time.sleep(0.2)        
-            if  wait_time([3.58, 3.59, 8.58, 8.59]):
-
-                velas=self.iq.get_velas(par, 7, 1)
-                velas=filter_doji([vela[-1] for vela in velas[:5]])
-                velas=[velas[0]]
-
-                if sum(velas)==1:
-                    return 'CALL','GREEN'
-                elif sum(velas)==-1:
-                    return 'PUT', 'RED'
-
-
-    def tres_mosqueteiros(self, par) -> tuple:
-        while True:
-            time.sleep(0.2)
-            if wait_time([2.58, 2.59, 7.58, 7.59]):
-
-                velas=self.iq.get_velas(par, 6, 1)
-                velas=filter_doji([vela[-1] for vela in velas])
-                velas=[velas[0]]
-
-                if sum(velas)==1:
-                    return 'CALL','GREEN'
-                elif sum(velas)==-1:
-                    return 'PUT', 'RED'
-
-
-    def modo_segmento(self, par) -> tuple:
-
-        if self.SEGMENTO==0:
-            self.SEGMENTO+=1
+    def modo(self, par, taxa_dif_vela=0.1) -> str:
             while True:
                 time.sleep(0.2)
-                if wait_time([1.59, 2.59, 3.59, 4.59, 5.59, 6.59, 7.59, 8.59, 9.59]):
+                if wait_time(self.TIMES[self.time]):
+                    
+                    minute = ((datetime.now()).strftime('%M'))[1:]
+                    velas_=self.iq.get_velas(par, 2, self.time)
+                    vela = self.get_vela_for_time(velas_, minute)
 
-                    velas_=self.iq.get_velas(par, 6, 1)
-                    velas=filter_doji([vela[-1] for vela in velas_])
-                    velas=[velas[0]]
+                    pavio_top, pavio_bot = calculate_pavio(vela)
+                    direc = 1 if pavio_top>pavio_bot else -1
+                    
+                    '''PAVIOS TECNICAMENTE EMPATADOS'''
+                    if abs(pavio_top - pavio_bot)<=min(pavio_top, pavio_bot)*taxa_dif_vela:
+                        direc = vela[-1]
 
-                    if sum(velas)==1:
-                        return 'CALL','GREEN'
-                    elif sum(velas)==-1:
-                        return 'PUT', 'RED'
-        else:
-            second = float(((datetime.now()).strftime('%S')))
-            dif_time=60-second
-            
-            if second==0:
-                time.sleep(1)
-
-            elif dif_time<3:
-                time.sleep(dif_time)
-
-            velas_=self.iq.get_velas(par, 6, 1)
-            if int(velas_[-1][0].split(':')[1]) == int(((datetime.now()).strftime('%M'))):
-                velas_.pop(-1)
-
-            if configs['DEBUG'] == 'True':
-                print(second,velas_)
-
-            velas=filter_doji([vela[-1] for vela in velas_])
-            velas=[velas[0]]
-
-            if sum(velas)==1:
-                return 'CALL','GREEN'
-            elif sum(velas)==-1:
-                return 'PUT', 'RED'
+                    if direc==1:
+                        return 'CALL'
+                    elif direc==-1:
+                        return 'PUT'

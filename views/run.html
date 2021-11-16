@@ -91,21 +91,40 @@
       eel.expose(refresh_operation)  
       function refresh_operation(result){
           result = JSON.parse(result)
+          console.log(result);
 
           var table_result = document.getElementById('table_operation_result');
           let row_table1 = document.createElement('tr')
-          result.RESULTS.forEach(function (elemento){
-            let resul = document.createElement('td');
-            resul.textContent = elemento;
-            row_table1.appendChild(resul);
-          })
+
+          let n = document.createElement('td');
+          let time = document.createElement('td');
+          let direc = document.createElement('td');
+          let gale = document.createElement('td');
+
+          n.textContent = result.n;
+          time.textContent = result.clock;
+          gale.textContent = result.level;
+
+          if (result.direc=='PUT'){
+            direc.textContent = 'V'
+            direc.style =  "color:red;"
+          }else{
+            direc.textContent = 'ꓥ'
+            direc.style =  "color:green;"
+          }
+          
+          row_table1.appendChild(n);
+          row_table1.appendChild(time);
+          row_table1.appendChild(direc);
+          row_table1.appendChild(gale);
+
           table_result.appendChild(row_table1)
       }      
       //---------------------------------------------------------  
-      async function start(){
+      async function iniciar(){
         if(status_start==false){
           status_start=true;
-          eel.start_operation()
+          eel.bnt_iniciar()
         }
       };
       //---------------------------------------------------------  

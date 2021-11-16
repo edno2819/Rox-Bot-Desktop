@@ -44,10 +44,6 @@ def bnt_sair():
 def bnt_config_confirmar2(entrada, delay, stop_win, stop_loss, type_operation, type_stop):
     set_variables_configs2(entrada, delay, stop_win, stop_loss, type_operation, type_stop)
 
-def teste(infos):
-    eel.refresh_operation(to_json_js(infos))
-
-
 @eel.expose
 def set_run_infos():
     infos = get_infos_run()

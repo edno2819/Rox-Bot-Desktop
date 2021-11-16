@@ -1,11 +1,15 @@
 import libraries.utils  as utils
 from libraries.strategys import Strategy
 from libraries.managementes import Management
+from datetime import datetime
+from libraries.utils import to_json_js
+import eel
 import time
+from libraries.thread_class import Thread
 
-#{'TIME_OPERATION': 1, 'delay': None, 'entrada': '15', 'type_stop': 'porcent', 'ASSET': 'NZDUSD-OTC', 'type_operation': 'PRACTICE', 'stop_win': 5.0, 'LEVEL': 1, 'stop_loss': -9.0, 'BINA_DINA': 'DIGITAL'}
 
-class MainOperation:
+
+class MainOperation2:
 
     def __init__(self, iq_instance) -> None:
         self.iq = iq_instance
@@ -166,8 +170,69 @@ class MainOperation:
             self.print_results(lucro, result, bet, level, time_bet, direc)
 
 
+class MainOperation:
 
-# b = MainOperation()
-# b.setup_start()
-# b.run()
+    def __init__(self, iq_instance) -> None:
+        self.strategy = Strategy(iq_instance)
+        self.iq = iq_instance
+        self.configs = {}
 
+    def set_configs(self, configs):
+        self.configs = {k: configs[k] if k in configs.keys() else self.configs[k] for k in set(self.configs) | set(configs)}
+
+    def set_init(self):
+        self.iq.change_balance(self.configs['type_operation'])
+        self.valor_entrada = self.configs['entrada']
+        self.delay = self.configs['delay']
+        self.asset = self.configs['ASSET']
+        self.bina_dina = self.configs['BINA_DINA']
+        self.level = self.configs['LEVEL']
+        self.set_stops()
+        self.strategy.set_delay(self.delay)
+        self.strategy.time = self.configs['TIME_OPERATION']
+        self.saldo = 0
+    
+    def set_stops(self):
+        if self.configs['type_stop']=='porcent':
+            saldo = self.iq.saldo()
+            self.stop_loss = round(self.configs['stop_loss'] *  (saldo/100),2)
+            self.stop_win = round(self.configs['stop_win'] * (saldo/100),2)
+        else:
+            self.stop_loss = self.configs['stop_loss']
+            self.stop_win = self.configs['stop_win']
+        
+    def make_bet(self, direc, level):
+        pass
+
+    def check_result(self, id):
+        pass
+
+    def send_bet_to_gui(self, direc, level, n, amount):
+        @eel.expose
+        def format_sinal():
+            clock = datetime.now().strftime('%H:%M:%S')
+            infos = {'n':n, 'clock':clock, 'direc':direc, 'level':level}
+            eel.refresh_operation(to_json_js(infos))
+            
+        Thread(target=format_sinal).start()
+        
+
+        
+    def run(self):
+        n=0
+        for level in range(self.level):
+            direc = self.strategy.modo(self.asset)
+            amount = 0
+            self.make_bet(direc, level)
+            self.send_bet_to_gui(direc, level, n, amount)
+            result = self.check_result(level)
+
+            if result=='Loss':...
+            
+            elif result=='win':...
+            
+            elif result=='empate':...
+            
+            else:
+                print('tratar erro')
+            n+=1

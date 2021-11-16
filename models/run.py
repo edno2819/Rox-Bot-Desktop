@@ -11,7 +11,8 @@ def get_infos_run():
 
 
 def start_operation():
-    THREAD_RUN.start()
+    MAIN_RUN.run()
+    #THREAD_RUN.start()
 
 
 def stop_operation():

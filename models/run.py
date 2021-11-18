@@ -7,7 +7,7 @@ THREAD_RUN = Thread(target=MAIN_RUN.run)
 def get_infos_run():
     result = MAIN.API.get_profile_ansyc()
     name = result['name']
-    return {"name":name, "balance":MAIN.saldo()}
+    return {"name":name, "balance":MAIN.saldo(), 'asset':MAIN_RUN.asset, 'bina_dina':MAIN_RUN.configs['BINA_DINA']}
 
 
 def start_operation():

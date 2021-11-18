@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" charset=utf-8>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script> 
     <script type="text/javascript" src="/eel.js"></script>
     <title>Configuração</title>
     <link href="bootstrap\bootstrap.min.css" rel="stylesheet">
@@ -22,9 +23,19 @@
       <br>
 
       <div class="form-check form-check-inline">
+
           <div class="input-group mb-3">
             <span class="input-group-text">Nome</span>
             <input type="text" class="form-control" placeholder="" id='nome' disabled>
+            <span class="input-group-text">Banca</span>
+            <input type="text" class="form-control" placeholder="" id='banca' disabled>
+          </div>
+
+          <br>
+
+          <div class="input-group mb-3">
+            <span class="input-group-text" id='asset'></span>
+            <span class="input-group-text" id='bina_dina'></span>
             <span class="input-group-text">Saldo</span>
             <input type="text" class="form-control" placeholder="" id='saldo' disabled>
           </div>
@@ -43,10 +54,11 @@
           <table class="table table-bordered table-striped mb-0" >
             <thead>
               <tr> 
-                <th scope="col">Nº</th>
                 <th scope="col">Horário</th>
                 <th scope="col">Direção</th>
                 <th scope="col">Nível</th>
+                <th scope="col">Valor</th>
+                <th scope="col">Result</th>
               </tr>
             </thead>
             <tbody id='table_operation_result'>
@@ -67,6 +79,20 @@
     </div>
     <br>
 
+    <!-- Modal -->
+    <div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="msg_stop_bot">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   <body>
 
 
@@ -81,28 +107,47 @@
         };
         eel.expose(get_infos_run)
         function get_infos_run(status){
+
           var infos = JSON.parse(status);
           globalThis.infos_glob = infos;
           document.getElementById('nome').placeholder  = infos.name
-          document.getElementById('saldo').placeholder  = infos.balance
+          document.getElementById('banca').placeholder  = infos.balance
+          document.getElementById('asset').textContent  = infos.asset
+          document.getElementById('bina_dina').textContent  = infos.bina_dina
+          document.getElementById('saldo').placeholder  = 0
+
         }
         set_run_infos()
+
+        eel.expose(alert_stop_goal)
+        function alert_stop_goal(status){
+          var infos = JSON.parse(status);
+          console.log(infos);
+
+          jQuery.noConflict();
+          $('#ModalLabel').modal('show');
+          document.getElementById('asset').placeholder  = infos.msg;
+
+        }        
       //---------------------------------------------------------  
       eel.expose(refresh_operation)  
       function refresh_operation(result){
           result = JSON.parse(result)
           console.log(result);
 
+          document.getElementById('saldo').placeholder  = result.result
+
           var table_result = document.getElementById('table_operation_result');
           let row_table1 = document.createElement('tr')
 
-          let n = document.createElement('td');
+          let value = document.createElement('td');
           let time = document.createElement('td');
           let direc = document.createElement('td');
           let gale = document.createElement('td');
+          let resultado = document.createElement('td');
 
-          n.textContent = result.n;
-          time.textContent = result.clock;
+          value.textContent = result.value_bet;
+          time.textContent = result.time_bet;
           gale.textContent = result.level;
 
           if (result.direc=='PUT'){
@@ -112,11 +157,24 @@
             direc.textContent = 'ꓥ'
             direc.style =  "color:green;"
           }
+
+          if (result.result>0){
+            resultado.textContent = 'WIN'
+            resultado.style =  "color:green;"
+          }
+          else if (result.result==0){
+            resultado.textContent = 'EMPARE'
+            resultado.style =  "color:yellow;"
+          }else{
+            resultado.textContent = 'LOSS'
+            resultado.style =  "color:red;"
+          }
           
-          row_table1.appendChild(n);
           row_table1.appendChild(time);
           row_table1.appendChild(direc);
           row_table1.appendChild(gale);
+          row_table1.appendChild(value);
+          row_table1.appendChild(resultado);
 
           table_result.appendChild(row_table1)
       }      
@@ -134,7 +192,7 @@
         };
       //---------------------------------------------------------
       async function stop_operation(){
-          eel.stop_operation()
+          eel.bnt_parar()
         };
       //---------------------------------------------------------
     </script>

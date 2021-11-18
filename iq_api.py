@@ -5,32 +5,34 @@ import time
 from main import send_infos_bet
 from libraries.thread_class import Thread
 
+class Teste:
+    def media_movel(self, velas, step):
+        velas=[vela[4] for vela in velas]
+        i = 0
+        medias_moveis=[]
+
+        while i < len(velas) - step + 1:
+            grupo = velas[i : i + step]
+            media_grupo = sum(grupo) / step
+            medias_moveis.append(media_grupo)
+            i +=1
+        return medias_moveis
+
+    def wait_time(self, times):
+        minutos = float(((datetime.now()).strftime('%M.%S'))[1:])
+        return True if minutos in times  else False
+
+    def filter_doji(self, velas:list):
+        velas.reverse()
+        try:
+            while True:
+                velas.remove(0)
+        except ValueError: return velas
+        
+    def RSI(self, nivel):
+        return nivel*2
 
 
-def media_movel(velas, step):
-    velas=[vela[4] for vela in velas]
-    i = 0
-    medias_moveis=[]
-
-    while i < len(velas) - step + 1:
-        grupo = velas[i : i + step]
-        media_grupo = sum(grupo) / step
-        medias_moveis.append(media_grupo)
-        i +=1
-    return medias_moveis
-
-def wait_time(times):
-    minutos = float(((datetime.now()).strftime('%M.%S'))[1:])
-    return True if minutos in times  else False
-
-def filter_doji(velas:list):
-    velas.reverse()
-    try:
-        while True:
-            velas.remove(0)
-    except ValueError: return velas
-    
-def RSI(nivel):...
 
 class Strategy:
     SEGMENTO, time = 0, 0
@@ -157,4 +159,40 @@ a.conect('edno28@hotmail.com', '99730755ed')
 b = MainOperation(a)
 b.set_init()
 b.run()
+
+
+
+
+def making_bet_segment(direc):
+    result, level, lucro, empates = self.fist_operation(direc)
+    if not result:
+        return 
+
+    for level in range(1,20):
+        level = level-empates
+
+        if result==0:#EMPATEs
+            level, empates = self.empate(empates, level)
+
+        elif not result: 
+            level, empates = self.not_result(empates, level)
+
+
+        elif result<0:#DERROTA
+            self.manager.quatro_por_um(self.quatro_por_um, level)
+                
+        elif result>0:#VITORIA 
+            return
+        
+        if level>=len(self.leveis): 
+            return 
+            
+        if level==-1: 
+            level=0
+
+        direc, _ = self.strategy.modo_segmento(self.configs['par'])
+
+        bet=self.leveis[level]
+        result, time_bet, lucro = self.beting_martin(bet, direc, lucro)       
+        self.print_results(lucro, result, bet, level, time_bet, direc)
 

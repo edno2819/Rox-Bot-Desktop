@@ -1,10 +1,9 @@
-from __future__ import print_function	
-import eel
-from models.login import *
+from libraries.utils import to_json_js
 from models.configs_1 import *
 from models.configs_2 import *
+from models.login import *
 from models.run import *
-from libraries.utils import to_json_js
+import eel
 
 
 eel.init('views')

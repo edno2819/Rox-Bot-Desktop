@@ -20,7 +20,7 @@ class IqOption:
         self.API.change_balance(type)
         
     def saldo(self):
-        self.perfil=self.API.get_profile_ansyc()
+        self.perfil = self.API.get_profile_ansyc()
         saldo = self.perfil['balances'][1]['amount'] if self.type =='PRACTICE' else self.perfil['balances'][0]['amount']
         return saldo
 
@@ -82,9 +82,9 @@ class IqOption:
         self.API.start_candles_stream(par, time_frame*60, step)
         velas=self.API.get_realtime_candles(par,time_frame)
         for item in velas:
-            clock=utils.timestamp_converter(item)
-            vela=velas[item]
-            vela_convert=[str(utils.timestamp_converter(vela['from'])),vela['open'],vela['max'],vela['min'],vela['close'],vela['volume']]
+            #clock=utils.timestamp_converter(item)
+            vela = velas[item]
+            #vela_convert=[str(utils.timestamp_converter(vela['from'])),vela['open'],vela['max'],vela['min'],vela['close'],vela['volume']]
         self.API.stop_candles_stream(par,time_frame)
 
     def bet_binaria(self, par:str, amount:float, action:str, time_frame:int, func=''):
@@ -99,7 +99,6 @@ class IqOption:
 
     def bet_digital(self, par:str, amount:float, action:str, time_frame:int, func=''):
         #action = CALL/PUT
-
         _, id = self.API.buy_digital_spot_v2(par, amount, action, time_frame)
         status = True if id != "error" else False
 
@@ -108,17 +107,13 @@ class IqOption:
         if id != "error":
             while True:
                 time.sleep(0.1)
-                check,win=self.API.check_win_digital_v2(id)
-                if check==True: return  round(win,2)
+                check , win = self.API.check_win_digital_v2(id)
+                if check==True: 
+                    return  round(win,2)
+
         else: return False
 
     def close(self):
         self.API.api.close()
 
 
-# t=IqOption()
-# t.conect('edno28@hotmail.com', '99730755ed')
-# t.close()
-# print(t.API.check_connect())
-# t.API.api.close()
-# print(t.API.check_connect())

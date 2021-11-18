@@ -38,13 +38,16 @@ class Strategy:
     }
 
     def __init__(self, iq) -> None:
-        self.iq=iq        
+        self.iq=iq   
+        self.time = 1     
     
+
     def set_delay(self, delay:int):
         delay_seconds = ((60 + delay)/100)
         for key in self.TIMES.keys():
-            self.TIMES[key] = [value + delay_seconds for value in self.TIMES[key]]
+            self.TIMES[key] = [round(value + delay_seconds,2) for value in self.TIMES[key]]
     
+
     def get_vela_for_time(self, velas, minute):
         for vela in velas:
             if vela[0][15]==minute:
@@ -53,24 +56,34 @@ class Strategy:
         return velas[-1]
             
 
+    def rox(self, par, taxa_dif_vela=0.1, wait=True) -> str:
+        def rox_():
+            minute = ((datetime.now()).strftime('%M'))[1:]
+            velas_=self.iq.get_velas(par, 2, self.time)
+            vela = self.get_vela_for_time(velas_, minute)
 
-    def modo(self, par, taxa_dif_vela=0.1) -> str:
-            while True:
+            pavio_top, pavio_bot = calculate_pavio(vela)
+            direc = 1 if pavio_top>pavio_bot else -1
+            
+            '''PAVIOS TECNICAMENTE EMPATADOS'''
+            if abs(pavio_top - pavio_bot)<=min(pavio_top, pavio_bot)*taxa_dif_vela:
+                direc = vela[-1]
+
+            if direc==1:
+                return 'CALL'
+            elif direc==-1:
+                return 'PUT'
+            else: 
+                return 'INDE'
+
+        while True:
+            direc = 'INDE'
+            if wait:
                 time.sleep(0.2)
                 if wait_time(self.TIMES[self.time]):
-                    
-                    minute = ((datetime.now()).strftime('%M'))[1:]
-                    velas_=self.iq.get_velas(par, 2, self.time)
-                    vela = self.get_vela_for_time(velas_, minute)
+                    direc = rox_()
+            else:
+                direc = rox_()
 
-                    pavio_top, pavio_bot = calculate_pavio(vela)
-                    direc = 1 if pavio_top>pavio_bot else -1
-                    
-                    '''PAVIOS TECNICAMENTE EMPATADOS'''
-                    if abs(pavio_top - pavio_bot)<=min(pavio_top, pavio_bot)*taxa_dif_vela:
-                        direc = vela[-1]
-
-                    if direc==1:
-                        return 'CALL'
-                    elif direc==-1:
-                        return 'PUT'
+            if direc in ['PUT', 'CALL']:
+                return direc

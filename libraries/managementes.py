@@ -20,6 +20,14 @@ class Management:
 
         self.levels=leveis[1:]
 
+    def martingale_fixo(self, bet:float, level, mult=2.5):
+        leveis = [bet]
+        for c in range(1,level+1):
+            value = leveis[c-1]*mult
+            leveis.append(value)
+        
+        return leveis
+
     def recuperacao(self, bet:float, py:int):
         fator=(py/100)
         leveis=[bet]
@@ -42,6 +50,6 @@ class Management:
         return False
 
 # a=Management()
-# a.martingale(10, 87)
+# a.martingale_fixo(10, 4)
 # print(a.levels)
             

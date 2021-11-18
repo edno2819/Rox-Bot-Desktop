@@ -1,7 +1,5 @@
 import sys
-import trace
 import threading
-import time
 
 
 class Thread(threading.Thread):

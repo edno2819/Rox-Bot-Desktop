@@ -22,6 +22,7 @@ def get_assets():
 
 @eel.expose
 def bnt_catalogar(asset, time, nivel):
+    bina_dina, asset, _, _ = asset.split(' ')
     result = catalogacao(asset, int(time), '03:00:00', int(nivel))
     eel.creat_table_catalog(to_json_js(result))
 
@@ -32,7 +33,8 @@ def start_configs_2():
 
 @eel.expose
 def bnt_config_confirmar(asset, time, gale):
-    set_variables_configs1(asset, time, gale)
+    bina_dina, asset, _, _ = asset.split(' ')
+    set_variables_configs1(asset, time, gale, bina_dina.replace(":", ''))
     return 
 
 @eel.expose

@@ -80,12 +80,14 @@
     <br>
 
     <!-- Modal -->
-    <div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+    <div class="modal fade" id="locModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="msg_stop_bot">Modal title</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <br>
+            <br>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="close_modal();">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -122,20 +124,29 @@
         eel.expose(alert_stop_goal)
         function alert_stop_goal(status){
           var infos = JSON.parse(status);
-          console.log(infos);
 
-          jQuery.noConflict();
-          $('#ModalLabel').modal('show');
-          document.getElementById('asset').placeholder  = infos.msg;
+          var locModal = document.getElementById('locModal');
+          locModal.style.display = "block";
+          locModal.style.paddingTop = "240px";
+          document.getElementById('msg_stop_bot').textContent = infos.msg;
+          locModal.className="modal fade show"; 
 
-        }        
+        }
+
+        function close_modal(){
+          var locModal = document.getElementById('locModal');
+          locModal.style.display = "none";
+          locModal.className="modal fade";
+        }
+
       //---------------------------------------------------------  
       eel.expose(refresh_operation)  
       function refresh_operation(result){
           result = JSON.parse(result)
           console.log(result);
 
-          document.getElementById('saldo').placeholder  = result.result
+          document.getElementById('saldo').placeholder  = result.saldo
+          document.getElementById('banca').placeholder = (globalThis.infos_glob.balance + result.saldo).toFixed(2);
 
           var table_result = document.getElementById('table_operation_result');
           let row_table1 = document.createElement('tr')

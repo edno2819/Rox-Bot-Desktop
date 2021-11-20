@@ -6,7 +6,8 @@ from datetime import datetime, timedelta
  
 def get_assets_py():
     result = MAIN.payout_all()
-    asssets = list(set(list(result[1].keys()) + list(result[0].keys())))
+    asssets = [f'BINARIA: {key} PY: {result[0][key]}' for key in result[0].keys()]
+    asssets += [f'DIGITAL: {key} PY: {result[1][key]}' for key in result[1].keys()]
     return asssets
 
 
@@ -59,7 +60,7 @@ def catalogacao(asset:str, time:int, clock_init:str, level:int, taxa:float=0.15)
         if direc!=0:
             RESULT['ENTRADAS'].append(vela[0])
             RESULT['DIR'].append(direc)
-            velas_ope = velas[c+G+1:c+G+1+level]
+            velas_ope = velas[c+G+1:c+G+1+level+1]
             velas_ope = [f[-1] for f in velas_ope]
             win = -1 if direc not in velas_ope else velas_ope.index(direc)
             if win==-1:
@@ -71,5 +72,5 @@ def catalogacao(asset:str, time:int, clock_init:str, level:int, taxa:float=0.15)
             RESULT['GALE'].append('Loss' if win==-1 else win)
     
     
-def set_variables_configs1(asset, time, nivel):
-    MAIN_RUN.set_configs({'ASSET':asset, 'TIME_OPERATION':int(time), 'BINA_DINA':'DIGITAL', 'LEVEL':int(nivel)})
+def set_variables_configs1(asset, time, nivel, bina_dina):
+    MAIN_RUN.set_configs({'ASSET':asset, 'TIME_OPERATION':int(time), 'BINA_DINA':bina_dina, 'LEVEL':int(nivel)})

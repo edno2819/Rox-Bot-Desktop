@@ -88,7 +88,7 @@ class IqOption:
         self.API.stop_candles_stream(par,time_frame)
 
     def bet_binaria(self, par:str, amount:float, action:str, time_frame:int, func=''):
-        status,id = self.API.buy(amount, par, action, time_frame)
+        status, id = self.API.buy(amount, par, action, time_frame)
         func(status, action) if func!='' else ...
 
         if status:

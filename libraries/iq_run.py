@@ -90,7 +90,7 @@ class MainOperation:
         result, time_bet, lucro = self.beting_martin(self.values_bet[0], direc, lucro)
         self.saldo += result
 
-        self.send_bet_to_gui(time_bet, direc, self.values_bet[0], level)
+        self.send_bet_to_gui(time_bet, direc, self.values_bet[0], level, result)
 
         result = False if result==0 else result
 
@@ -120,12 +120,15 @@ class MainOperation:
             bet_value = self.values_bet[level]
             result, time_bet, lucro = self.beting_martin(bet_value, direc, lucro)  
             self.saldo += result
-            self.send_bet_to_gui(time_bet, direc, self.values_bet[level], level)
+            self.send_bet_to_gui(time_bet, direc, self.values_bet[level], level, result)
 
 
-    def send_bet_to_gui(self, time_bet, direc, value_bet, level):
+    def send_bet_to_gui(self, time_bet, direc, value_bet, level, result):
+        if not result:
+            result = 'O.N.R'
+            
         def format_sinal():
-            infos = {'time_bet':time_bet, 'direc':direc, 'level':level, 'value_bet':value_bet, 'result':round(self.saldo,2)}
+            infos = {'time_bet':time_bet, 'direc':direc, 'level':level, 'value_bet':value_bet, 'result':result,'saldo':round(self.saldo,2)}
             eel.refresh_operation(json.dumps(infos))
             
         Thread(target=format_sinal).start()

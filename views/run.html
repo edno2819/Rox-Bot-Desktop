@@ -13,7 +13,7 @@
 
 
 
-  <body class="bg-light">
+  <body class="bg-light"></body>
     <div class="background"></div>
 
     <div class="login_container">
@@ -39,12 +39,19 @@
             <span class="input-group-text">Saldo</span>
             <input type="text" class="form-control" placeholder="" id='saldo' disabled>
           </div>
+
+          <div class="input-group mb-3">
+            <span class="input-group-text">Time</span>
+            <input type="text" class="form-control" placeholder="" id='time' disabled>
+            <span class="input-group-text">Nível</span>
+            <input type="text" class="form-control" placeholder="" id='nivel' disabled>
+          </div>
         
         <br>
 
         <div>
           <input type="radio" class="btn-check" id="success-outlined" autocomplete="off" checked>
-          <label class="btn btn-outline-success" for="success-outlined" onclick="iniciar();">Iniciar</label>
+          <label class="btn btn-outline-success" for="success-outlined" id ='bnt_iniciar' onclick="iniciar();">Iniciar</label>
         </div>
 
         <br>
@@ -54,7 +61,7 @@
           <table class="table table-bordered table-striped mb-0" >
             <thead>
               <tr> 
-                <th scope="col">Horário</th>
+                <th scope="col">Início</th>
                 <th scope="col">Direção</th>
                 <th scope="col">Nível</th>
                 <th scope="col">Valor</th>
@@ -116,9 +123,11 @@
           document.getElementById('banca').placeholder  = infos.balance
           document.getElementById('asset').textContent  = infos.asset
           document.getElementById('bina_dina').textContent  = infos.bina_dina
+          document.getElementById('time').placeholder  = infos.time
+          document.getElementById('nivel').placeholder  = infos.nivel
           document.getElementById('saldo').placeholder  = 0
-
         }
+        
         set_run_infos()
 
         eel.expose(alert_stop_goal)
@@ -192,12 +201,14 @@
       //---------------------------------------------------------  
       async function iniciar(){
         if(status_start==false){
+          document.getElementById('bnt_iniciar').textContent = "Buscando!"
           status_start=true;
           eel.bnt_iniciar()
         }
       };
       //---------------------------------------------------------  
       async function logout(){
+          eel.bnt_parar()
           window.location.href = "configs_2.html";
           //eel.bnt_sair()
         };

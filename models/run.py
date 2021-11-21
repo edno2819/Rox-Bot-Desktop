@@ -1,24 +1,25 @@
 from libraries.iq_global import *
 from libraries.thread_class import Thread
 
-THREAD_RUN = Thread(target=MAIN_RUN.run)
 
+class MeneRun:
+    def get_infos_run(self):
+        result = MAIN.API.get_profile_ansyc()
+        name = result['name']
+        return {"name":name, "balance":MAIN.saldo(), 'asset':MAIN_RUN.asset, 'bina_dina':MAIN_RUN.configs['BINA_DINA'],'nivel':MAIN_RUN.level, 'time':MAIN_RUN.time_operation}
+    
+    def reset_thread(self):
+        self.THREAD_RUN = Thread(target=MAIN_RUN.run)
 
-def get_infos_run():
-    result = MAIN.API.get_profile_ansyc()
-    name = result['name']
-    return {"name":name, "balance":MAIN.saldo(), 'asset':MAIN_RUN.asset, 'bina_dina':MAIN_RUN.configs['BINA_DINA']}
+    def start_operation(self):
+        #MAIN_RUN.run()
+        self.reset_thread()
+        self.THREAD_RUN.start()
 
+    def stop_operation(self):
+        self.THREAD_RUN.kill()
 
-def start_operation():
-    #MAIN_RUN.run()
-    THREAD_RUN.start()
-
-
-def stop_operation():
-    THREAD_RUN.kill()
-
-def checks():...
-    # entrada n pode ser maior q saldo
+    def checks():...
+        # entrada n pode ser maior q saldo
 
 

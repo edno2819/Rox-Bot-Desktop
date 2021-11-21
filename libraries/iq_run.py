@@ -72,7 +72,7 @@ class MainOperation:
                 direc = self.strategy.rox(self.asset, wait=wait)
                 wait = self.making_bet_martingale(direc)
             except:
-                msg = 'Operações paradas por algum motivo desconhecido!'
+                msg = 'Operação Parada!'
                 break
 
         self.send_finally_to_gui(msg)

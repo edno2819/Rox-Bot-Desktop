@@ -3,14 +3,16 @@ from models.configs_1 import *
 from models.configs_2 import *
 from models.login import *
 from models.run import *
-import eel
+import eel, sys
 
 
 eel.init('views')
 
+run_gere = MeneRun()
 
 @eel.expose
 def btn_login(user_name, password):
+    eel.show(f"configs_1.html")
     result = login_user(user_name, password)
     result = '{'+f'"status_bot": "{result[0]}", "status_iq": "{result[1]}"' + '}'
     eel.login_return(str(result))
@@ -47,16 +49,38 @@ def bnt_config_confirmar2(entrada, delay, stop_win, stop_loss, type_operation, t
 
 @eel.expose
 def set_run_infos():
-    infos = get_infos_run()
+    infos = run_gere.get_infos_run()
     eel.get_infos_run(to_json_js(infos))
 
 @eel.expose
 def bnt_iniciar():
-    start_operation()
+    run_gere.start_operation()
 
 @eel.expose
 def bnt_parar():
-    stop_operation()
+    run_gere.stop_operation()
 
 
-eel.start("index.html", size=(730,700))
+def close_callback(route, websockets):
+    if route=='run.html':
+        print('logout_ run html!')
+        run_gere.stop_operation()
+
+    if route=='index.html':
+        print('logout_ index html!')
+        logout()
+        sys.exit(0)
+
+def start_eel():
+    ports = [8001, 8001, 27000, 8080]
+    for port in ports:
+        try:
+            eel.start("index.html", size=(730,700), port=port, close_callback=close_callback)
+            eel.close_browser()
+            break
+        except:
+            eel.close_browser()
+
+
+eel.start("index.html", size=(730,700), port=8000, close_callback=close_callback)
+#start_eel()

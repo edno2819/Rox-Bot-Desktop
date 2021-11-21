@@ -71,6 +71,11 @@
 
 
     <script type="text/javascript" >
+        eel.expose(close_browser);
+        function close_browser(){
+            console.log('teste windows close');
+            window.close(); 
+        }
     //--------------------------------------------ONLY FUNCTIONS JS----------------------------------------------------------------------  
 
         function generateBarCode() 
@@ -124,7 +129,8 @@
             var status = JSON.parse(status);
 
             if (status.status_bot == "True" & status.status_iq == "True"){
-                window.location.href = "configs_1.html";
+                //window.location.href = "configs_1.html";
+                console.log('foi')
             }
             else if (status.status_iq == "False"){
                 $('#login_txt').text("Usuario ou Senha incorreto")

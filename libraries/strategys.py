@@ -43,6 +43,9 @@ class Strategy:
     
 
     def set_delay(self, delay:int):
+        if delay>=0:
+            delay = -1
+
         delay_seconds = ((60 + delay)/100)
         for key in self.TIMES.keys():
             self.TIMES[key] = [round(value + delay_seconds,2) for value in self.TIMES[key]]

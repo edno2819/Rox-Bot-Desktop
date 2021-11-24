@@ -129,8 +129,8 @@
             var status = JSON.parse(status);
 
             if (status.status_bot == "True" & status.status_iq == "True"){
-                //window.location.href = "configs_1.html";
-                console.log('foi')
+                eel.change_current_page("configs_1.html");
+                window.location.href = "configs_1.html";
             }
             else if (status.status_iq == "False"){
                 $('#login_txt').text("Usuario ou Senha incorreto")

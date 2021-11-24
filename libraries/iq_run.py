@@ -116,7 +116,6 @@ class MainOperation:
                 level=0
 
             
-            direc = self.strategy.rox(self.asset, wait=False)
             bet_value = self.values_bet[level]
             result, time_bet, lucro = self.beting_martin(bet_value, direc, lucro)  
             self.saldo += result

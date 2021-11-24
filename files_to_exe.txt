@@ -2,3 +2,6 @@ ell/eel.js
 geventwebsocket
 bottle_websocket
 certifi/cacert.pem
+googleapiclient
+httplib2
+views

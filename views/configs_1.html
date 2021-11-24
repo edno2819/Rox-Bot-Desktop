@@ -218,6 +218,7 @@
     }      
     //---------------------------------------------------------  
     async function logout(){
+        eel.change_current_page("index.html");
         window.location.href = "index.html";
         eel.bnt_sair()
       };
@@ -227,7 +228,8 @@
         var time = document.getElementById('list_time_frame');
         var nivel = document.getElementById('list_nivel_martingale');
         eel.bnt_config_confirmar(list.options[list.selectedIndex].value, time.options[time.selectedIndex].value, nivel.options[nivel.selectedIndex].value)
-        
+
+        eel.change_current_page("configs_2.html");
         window.location.href = "configs_2.html";
       };
       //---------------------------------------------------------  

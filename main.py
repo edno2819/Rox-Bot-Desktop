@@ -6,21 +6,34 @@ from models.run import *
 import eel, sys
 
 
+class GerePages:
+    current_html = 'index.html'
+
+    def ChangeCurrentPage(self, name):
+        self.current_html = name
+
+gerepages = GerePages()
+run_gere = MeneRun()
 eel.init('views')
 
-run_gere = MeneRun()
+
+@eel.expose
+def change_current_page(name):
+    gerepages.ChangeCurrentPage(name)
+
 
 @eel.expose
 def btn_login(user_name, password):
-    eel.show(f"configs_1.html")
     result = login_user(user_name, password)
     result = '{'+f'"status_bot": "{result[0]}", "status_iq": "{result[1]}"' + '}'
     eel.login_return(str(result))
+
 
 @eel.expose
 def get_assets(): 
     result = get_assets_py()
     eel.create_list_assets(to_json_js(result))
+
 
 @eel.expose
 def bnt_catalogar(asset, time, nivel):
@@ -28,10 +41,12 @@ def bnt_catalogar(asset, time, nivel):
     result = catalogacao(asset, int(time), '03:00:00', int(nivel))
     eel.creat_table_catalog(to_json_js(result))
 
+
 @eel.expose
 def start_configs_2():
     infos = get_infos()
     eel.get_infos_init(to_json_js(infos))
+
 
 @eel.expose
 def bnt_config_confirmar(asset, time, gale):
@@ -39,22 +54,27 @@ def bnt_config_confirmar(asset, time, gale):
     set_variables_configs1(asset, time, gale, bina_dina.replace(":", ''))
     return 
 
+
 @eel.expose
 def bnt_sair():
     logout()
 
+
 @eel.expose
 def bnt_config_confirmar2(entrada, delay, stop_win, stop_loss, type_operation, type_stop):
     set_variables_configs2(entrada, delay, stop_win, stop_loss, type_operation, type_stop)
+
 
 @eel.expose
 def set_run_infos():
     infos = run_gere.get_infos_run()
     eel.get_infos_run(to_json_js(infos))
 
+
 @eel.expose
 def bnt_iniciar():
     run_gere.start_operation()
+
 
 @eel.expose
 def bnt_parar():
@@ -62,14 +82,26 @@ def bnt_parar():
 
 
 def close_callback(route, websockets):
-    if route=='run.html':
+    if route=='run.html' and gerepages.current_html=='run.html':
         print('logout_ run html!')
         run_gere.stop_operation()
-
-    if route=='index.html':
-        print('logout_ index html!')
         logout()
         sys.exit(0)
+
+    elif route=='index.html'  and gerepages.current_html=='index.html':
+        print('logout_ index html!')
+        sys.exit(0)
+
+    elif route=='configs_1.html'  and gerepages.current_html=='configs_1.html':
+        print('logout_ configs_1 html!')
+        logout()
+        sys.exit(0)
+
+    elif route=='configs_2.html'  and gerepages.current_html=='configs_2.html':
+        print('logout_ configs_2 html!')
+        logout()
+        sys.exit(0)
+
 
 def start_eel():
     ports = [8001, 8001, 27000, 8080]

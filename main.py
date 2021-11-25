@@ -16,6 +16,9 @@ gerepages = GerePages()
 run_gere = MeneRun()
 eel.init('views')
 
+@eel.expose
+def get_mensagem():
+    eel.get_mensagem_init(to_json_js(get_msg_sheet())) 
 
 @eel.expose
 def change_current_page(name):

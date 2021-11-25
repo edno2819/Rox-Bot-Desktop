@@ -12,14 +12,10 @@ class MeneRun:
         self.THREAD_RUN = Thread(target=MAIN_RUN.run)
 
     def start_operation(self):
-        #MAIN_RUN.run()
         self.reset_thread()
         self.THREAD_RUN.start()
 
     def stop_operation(self):
         self.THREAD_RUN.kill()
-
-    def checks():...
-        # entrada n pode ser maior q saldo
 
 

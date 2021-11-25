@@ -20,20 +20,30 @@ def get_data_sheet():
     result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME).execute()
     values = result.get('values', [])
 
-    clientes, menssagem = [], []
+    clientes, menssagem = {}, []
 
     for valor in values:
         if valor==[]:
             pass
-        elif len(valor)==2:
-            menssagem.append(valor[1])
+        elif len(valor)==3:
+            menssagem.append(valor[2])
             if valor[0]!="":  
-                clientes.append(valor[0])
+                clientes[valor[0]] = ''
+            if valor[1]!="" and valor[0]!="":  
+                clientes[valor[0]] = valor[1]
+
+        elif len(valor)==2:
+            if valor[0]!="":  
+                clientes[valor[0]] = ''
+            if valor[1]!="" and valor[0]!="":  
+                clientes[valor[0]] = valor[1]
+
         else:
             if valor[0]!="":  
-                clientes.append(valor[0])
+                clientes[valor[0]] = ''
 
-    DATA = {'clientes':clientes, 'menssagem': menssagem}
+    DATA = {'clientes':clientes, 'mensagem': menssagem}
 
     return DATA
+
 

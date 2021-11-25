@@ -57,7 +57,7 @@ class MainOperation:
         self.strategy.set_delay(self.delay)
         self.time_operation = self.configs['TIME_OPERATION']
         self.strategy.time = self.time_operation
-        self.values_bet = self.manage.martingale_fixo(self.valor_entrada, self.level, mult=2.5)
+        self.values_bet = self.manage.martingale_fixo(self.valor_entrada, self.level, mult=2.3)
         self.set_functions()
         self.set_stops()
         self.saldo = 0
@@ -94,7 +94,8 @@ class MainOperation:
 
         result = False if result==0 else result
 
-        if not result: return True
+        if not result: 
+            return True
 
         for level in range(1, 20):
             level = level-empates

@@ -9,6 +9,7 @@
     <link href="bootstrap\bootstrap.min.css" rel="stylesheet">
     <link href="bootstrap\custom.css" rel="stylesheet">
     <link href="form-validation.css" rel="stylesheet">
+    <link rel="icon" href="img/ico_wite.ico">
   </head>
 
 
@@ -182,12 +183,12 @@
             resultado.textContent = 'WIN'
             resultado.style =  "color:green;"
           }
-          else if (result.result==0){
-            resultado.textContent = 'EMPARE'
-            resultado.style =  "color:yellow;"
-          }else{
+          else if (result.result<0){
             resultado.textContent = 'LOSS'
             resultado.style =  "color:red;"
+          }else{
+            resultado.textContent = 'EMPARE'
+            resultado.style =  "color:yellow;"
           }
           
           row_table1.appendChild(time);

@@ -7,7 +7,7 @@
     <script type="text/javascript" src="/eel.js"></script>
     <script type="text/javascript" src="js/index_animations.js"></script>
     <link rel="stylesheet" href="css/index.css">
-    <link rel="icon" href="img/password.png">
+    <link rel="icon" href="img/ico_wite.ico">
     <title>IQ Login</title>
 </head> 
 
@@ -18,7 +18,7 @@
         <div class="login_container">
 
             <div class="title_login">
-                <h1 class="title" style="padding:0;">IQ Bot</h1>
+                <h1 class="title" style="padding:0;">BOT ROX</h1>
             </div>
 
             <div class="login_label">
@@ -36,8 +36,11 @@
             </div>
 
             <div class="buttons_container">
-                <label class="top_label" style="margin: 0 20px;">Sem acesso ao Bot? <a href="#" onclick="recovery_pass('open');">Clique aqui</a></label>
                 <button class="buttons" onclick="login_user();">Confirmar</button>
+            </div>
+
+            <div class="buttons_container">
+                <label class="top_label" style="margin: 0 20px; line-height: 1.8; text-align: center;" id='mensagem'>Sem acesso ao Bot?</label>
             </div>
 
             <div class="login_user" style="text-align: center;width: 100%;">
@@ -71,18 +74,20 @@
 
 
     <script type="text/javascript" >
-        eel.expose(close_browser);
-        function close_browser(){
-            console.log('teste windows close');
-            window.close(); 
+
+        eel.get_mensagem()
+        eel.expose(get_mensagem_init);
+        function get_mensagem_init(result) 
+        {
+            result = JSON.parse(result)
+            console.log(result)
+            document.getElementById('mensagem').innerText = result.mensagem;
         }
     //--------------------------------------------ONLY FUNCTIONS JS----------------------------------------------------------------------  
 
-        function generateBarCode() 
-        {
-            var nric = $('#text').val();
-            var url = 'https://api.qrserver.com/v1/create-qr-code/?data=' + nric + '&amp;size=50x50';
-            $('#barcode').attr('src', url);
+        function generateBarCode(){
+            result = JSON.parse(eel.get_mensagem())
+            document.createElement('mensagem').innerText  = result.mensagem
         }
     
         //REGISTRO DE NOVO USUARIO//---------------------------------------------------------  

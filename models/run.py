@@ -17,5 +17,8 @@ class MeneRun:
 
     def stop_operation(self):
         self.THREAD_RUN.kill()
+        # t1.join()
+        # if not t1.isAlive():
+        #   print('thread killed')
 
 

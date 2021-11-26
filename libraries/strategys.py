@@ -1,5 +1,6 @@
-from libraries.utils import calculate_pavio
+from libraries.utils import calculate_pavio, time_now
 from datetime import datetime
+import logging
 import time
 
 
@@ -39,7 +40,8 @@ class Strategy:
 
     def __init__(self, iq) -> None:
         self.iq=iq   
-        self.time = 1     
+        self.time = 1 
+        self.log = logging.getLogger(__name__)    
     
 
     def set_delay(self, delay:int):
@@ -67,6 +69,13 @@ class Strategy:
 
             pavio_top, pavio_bot = calculate_pavio(vela)
             direc = 1 if pavio_top>pavio_bot else -1
+
+            self.log.info(f"Vela de operação {vela}; Maior pavio {direc}")
+
+            if int(time_now("%S"))>4 and int(time_now("%S"))<=55 and wait==True:
+                self.log.info(f"Sinal cancelado por delay")
+                return 'INDE'
+
             
             '''PAVIOS TECNICAMENTE EMPATADOS'''
             if abs(pavio_top - pavio_bot)<=min(pavio_top, pavio_bot)*taxa_dif_vela:

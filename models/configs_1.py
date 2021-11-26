@@ -73,4 +73,5 @@ def catalogacao(asset:str, time:int, clock_init:str, level:int, taxa:float=0.15)
     
     
 def set_variables_configs1(asset, time, nivel, bina_dina):
+    LOG.debug(f"Set configs 1: {asset}, {time}, {bina_dina}, {nivel}")
     MAIN_RUN.set_configs({'ASSET':asset, 'TIME_OPERATION':int(time), 'BINA_DINA':bina_dina, 'LEVEL':int(nivel)})

@@ -5,3 +5,4 @@ certifi/cacert.pem
 googleapiclient
 httplib2
 views
+logs

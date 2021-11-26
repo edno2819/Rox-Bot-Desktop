@@ -1,9 +1,10 @@
-from libraries.utils import to_json_js
+from libraries.utils import to_json_js, time_now
 from models.configs_1 import *
 from models.configs_2 import *
 from models.login import *
 from models.run import *
 import eel, sys
+import logging
 
 
 class GerePages:
@@ -12,9 +13,7 @@ class GerePages:
     def ChangeCurrentPage(self, name):
         self.current_html = name
 
-gerepages = GerePages()
-run_gere = MeneRun()
-eel.init('views')
+
 
 @eel.expose
 def get_mensagem():
@@ -117,5 +116,15 @@ def start_eel():
             eel.close_browser()
 
 
-eel.start("index.html", size=(730,700), port=8000, close_callback=close_callback)
-#start_eel()
+if __name__ == '__main__':
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s %(name)s %(levelname)s %(message)s',
+        filename=f'./logs/log_{time_now("%Y-%m-%d %H-%M-%S")}.log',
+        filemode='w')
+
+    gerepages = GerePages()
+    run_gere = MeneRun()
+
+    eel.init('views')
+    eel.start("index.html", size=(730,700), port=8000, close_callback=close_callback)

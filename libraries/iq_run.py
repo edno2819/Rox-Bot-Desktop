@@ -1,7 +1,10 @@
 from libraries.managementes import Management
 from libraries.thread_class import Thread
 from libraries.strategys import Strategy
+from libraries.utils import time_now
 from datetime import datetime
+
+import logging
 import json
 import eel
 
@@ -27,6 +30,8 @@ class MainOperation:
         self.manage = Management()
         self.iq = iq_instance
         self.configs = {}
+        self.log = logging.getLogger(__name__)
+        self.log.debug("MainOperation started")
 
 
     def set_configs(self, configs):
@@ -81,6 +86,7 @@ class MainOperation:
     def beting_martin(self, bet, direc, lucro):
         clock = datetime.now().strftime('%H:%M:%S')
         result = self.make_bet(self.asset, bet, direc, self.time_operation)
+        self.log.info(f"Operation started infos: {self.asset}, {bet}, {direc}, {self.time_operation}")
         lucro += result
         return result, clock, lucro
 
@@ -95,6 +101,7 @@ class MainOperation:
         result = False if result==0 else result
 
         if not result: 
+            self.log.info(f"Operation Fist operation==0)")
             return True
 
         for level in range(1, 20):

@@ -14,9 +14,15 @@ class IqOption:
         else: 
             return False
 
+    def reconnect(self):
+        if not self.API.check_connect(): 
+            self.API.connect()
+            self.API.change_balance(self.type)
+            return self.API.check_connect()
+
     def change_balance(self, type='PRACTICE'):
         '''PRACTICE / REAL'''
-        self.type=type
+        self.type = type
         self.API.change_balance(type)
         
     def saldo(self):

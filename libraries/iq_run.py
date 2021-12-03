@@ -1,7 +1,7 @@
+from libraries.strategys import Strategy, Trigger
 from libraries.managementes import Management
 from libraries.thread_class import Thread
-from libraries.strategys import Strategy
-from libraries.utils import time_now
+from libraries.utils import check_net
 from datetime import datetime
 
 import logging
@@ -27,6 +27,7 @@ class MainOperation:
 
     def __init__(self, iq_instance) -> None:
         self.strategy = Strategy(iq_instance)
+        self.trigger = Trigger(iq_instance)
         self.manage = Management()
         self.iq = iq_instance
         self.configs = {}
@@ -59,26 +60,41 @@ class MainOperation:
         self.delay = self.configs['DELAY']
         self.asset = self.configs['ASSET']
         self.level = self.configs['LEVEL']
-        self.strategy.set_delay(self.delay)
         self.time_operation = self.configs['TIME_OPERATION']
         self.strategy.time = self.time_operation
-        self.values_bet = self.manage.martingale_fixo(self.valor_entrada, self.level, mult=2.3)
+        self.strategy.set_delay(self.delay)
+        self.values_bet = self.manage.martingale_fixo(self.valor_entrada, self.level, mult=self.configs['MUTIPLIER'])
+        self.trigger_level = self.configs['TRIGGER']
         self.set_functions()
         self.set_stops()
         self.saldo = 0
 
 
+    def run_trigger(self):
+        if self.trigger_level>0:
+            self.trigger.rox_trigger(self.asset, self.time_operation, self.level, self.trigger_level)
+
+
     def run(self):
         wait = True
         msg = False
+        self.run_trigger()
+        error = 0
         while self.saldo < self.stop_win and self.saldo > self.stop_loss:
 
             try:
+
                 direc = self.strategy.rox(self.asset, wait=wait)
                 wait = self.making_bet_martingale(direc)
-            except:
-                msg = 'Operação Parada!'
-                break
+                error=0
+            except Exception as e:
+                self.log.info(f"Erro in method run: {e}")
+                msg_erro = self.check_erro()
+                error+=1
+                if error>1 or msg_erro:
+                    msg_erro = msg_erro if msg_erro!=None else ''
+                    msg = f'Operação Parada! {msg_erro}'
+                    break
 
         self.send_finally_to_gui(msg)
 
@@ -105,6 +121,7 @@ class MainOperation:
             return True
 
         for level in range(1, 20):
+
             level = level-empates
 
             if result==0:
@@ -123,7 +140,6 @@ class MainOperation:
             if level==-1: 
                 level=0
 
-            
             bet_value = self.values_bet[level]
             result, time_bet, lucro = self.beting_martin(bet_value, direc, lucro)  
             self.saldo += result
@@ -135,7 +151,7 @@ class MainOperation:
             result = 'O.N.R'
             
         def format_sinal():
-            infos = {'time_bet':time_bet, 'direc':direc, 'level':level, 'value_bet':value_bet, 'result':result,'saldo':round(self.saldo,2)}
+            infos = {'time_bet':time_bet, 'direc':direc, 'level':level, 'value_bet':round(value_bet,2), 'result':result,'saldo':round(self.saldo,2)}
             eel.refresh_operation(json.dumps(infos))
             
         Thread(target=format_sinal).start()
@@ -150,3 +166,13 @@ class MainOperation:
             eel.alert_stop_goal(json.dumps(infos))
             
         Thread(target=send_alert).start()
+    
+
+    def check_erro(self):
+        if not check_net():
+            return 'Sem conexão com a internet'
+        elif not self.iq.API.check_connect():
+            self.log.info(f"Instância IQ desconectada!")
+            if not self.iq.reconnect():
+                return 'Sem conexão com a IQ OPTION'
+

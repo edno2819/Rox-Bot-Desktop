@@ -35,6 +35,8 @@
             <div class="input-group mb-3">
               <span class="input-group-text">Delay</span>
               <input type="number" class="form-control" id='delay' placeholder="Delay" oninput="this.value =  Math.abs(this.value)*-1" value='-1' max='-4'>
+              <span class="input-group-text">Taxa Martingale</span>
+              <input type="number" class="form-control" id='multiplier' value='2.3' max='5'>
             </div>
 
             <div class="input-group mb-3">
@@ -47,6 +49,11 @@
               <select class="form-select" id="type_stop" onchange='ajust_type_stop();'>
                 <option value="R$">Valor</option>
                 <option selected value="%">Porcentagem</option>
+              </select>
+              <label class="input-group-text" for="trigger">Entrada</label>
+              <select class="form-select" id="trigger">
+                <option value="0" selected>Prox. Vela</option>
+                <option value="1">Após 1 Loss</option>
               </select>
             </div>
 
@@ -142,6 +149,7 @@
       var type_stop = document.getElementById('stop_type1')
       var stop_win = document.getElementById('stop-win');
       var stop_loss = document.getElementById('stop-loss');
+      var multiplier = document.getElementById('multiplier');
       
       if(document.getElementById('flexRadioDefault1').checked==true){
         var type_operation = 'PRACTICE'
@@ -156,8 +164,18 @@
       else{
         var type_stop = 'porcent'
       }
+
+      if(document.getElementById('trigger').options[0].selected==true){
+        var trigger = '0'
+      }
+      else if(document.getElementById('trigger').options[1].selected==true){
+        var trigger = '1'
+      }
+      else{
+        var trigger = '2'
+      }
       
-      eel.bnt_config_confirmar2(entrada.value, delay.value, stop_win.value, stop_loss.value, type_operation, type_stop)
+      eel.bnt_config_confirmar2(entrada.value, delay.value, stop_win.value, stop_loss.value, type_operation, type_stop, trigger, multiplier.value)
 
       eel.change_current_page("run.html");
       window.location.href = "run.html";

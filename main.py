@@ -1,4 +1,4 @@
-from libraries.utils import to_json_js, time_now
+from libraries.utils import to_json_js, time_now, check_port
 from models.configs_1 import *
 from models.configs_2 import *
 from models.login import *
@@ -18,6 +18,7 @@ class GerePages:
 @eel.expose
 def get_mensagem():
     eel.get_mensagem_init(to_json_js(get_msg_sheet())) 
+
 
 @eel.expose
 def change_current_page(name):
@@ -40,7 +41,7 @@ def get_assets():
 @eel.expose
 def bnt_catalogar(asset, time, nivel):
     bina_dina, asset, _, _ = asset.split(' ')
-    result = catalogacao(asset, int(time), '03:00:00', int(nivel))
+    result = catalogacao(asset, int(time), int(nivel))
     eel.creat_table_catalog(to_json_js(result))
 
 
@@ -63,8 +64,8 @@ def bnt_sair():
 
 
 @eel.expose
-def bnt_config_confirmar2(entrada, delay, stop_win, stop_loss, type_operation, type_stop):
-    set_variables_configs2(entrada, delay, stop_win, stop_loss, type_operation, type_stop)
+def bnt_config_confirmar2(entrada, delay, stop_win, stop_loss, type_operation, type_stop, trigger, multiplier):
+    set_variables_configs2(entrada, delay, stop_win, stop_loss, type_operation, type_stop, trigger, multiplier)
 
 
 @eel.expose
@@ -79,41 +80,50 @@ def bnt_iniciar():
 
 
 @eel.expose
-def bnt_parar():
+def bnt_parar(): 
     run_gere.stop_operation()
 
 
 def close_callback(route, websockets):
+    global log
+
     if route=='run.html' and gerepages.current_html=='run.html':
-        print('logout_ run html!')
-        run_gere.stop_operation()
-        logout()
+        try:
+            run_gere.NOT_HIBERNATE.kill()
+            run_gere.stop_operation()
+            logout()
+        except Exception as e:
+            log.info(f'Erro in exit run.html: {e}')
         sys.exit(0)
 
     elif route=='index.html'  and gerepages.current_html=='index.html':
-        print('logout_ index html!')
         sys.exit(0)
 
     elif route=='configs_1.html'  and gerepages.current_html=='configs_1.html':
-        print('logout_ configs_1 html!')
-        logout()
-        sys.exit(0)
+        try:
+            logout()
+            sys.exit(0)
+        except Exception as e:
+            log.info(f'Erro in exit configs_2.html: {e}')
+            sys.exit(0)
 
     elif route=='configs_2.html'  and gerepages.current_html=='configs_2.html':
-        print('logout_ configs_2 html!')
-        logout()
-        sys.exit(0)
+        try:
+            logout()
+            sys.exit(0)
+        except Exception as e:
+            log.info(f'Erro in exit configs_2.html: {e}')
+            sys.exit(0)
 
 
 def start_eel():
-    ports = [8001, 8001, 27000, 8080]
+    ports = [8000, 8001, 27000, 8080]
+
     for port in ports:
-        try:
+        if not check_port(port):
             eel.start("index.html", size=(730,700), port=port, close_callback=close_callback)
-            eel.close_browser()
-            break
-        except:
-            eel.close_browser()
+            return
+
 
 
 if __name__ == '__main__':
@@ -123,8 +133,10 @@ if __name__ == '__main__':
         filename=f'./logs/log_{time_now("%Y-%m-%d %H-%M-%S")}.log',
         filemode='w')
 
+    log = logging.getLogger(__name__)
+
     gerepages = GerePages()
     run_gere = MeneRun()
 
     eel.init('views')
-    eel.start("index.html", size=(730,700), port=8000, close_callback=close_callback)
+    start_eel()

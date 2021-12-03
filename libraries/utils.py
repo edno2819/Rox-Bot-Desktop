@@ -1,6 +1,45 @@
 from datetime import datetime
 from dateutil import tz
 import time, sys
+import win32com.client as comctl
+import socket
+from psutil import process_iter
+
+
+wsh = comctl.Dispatch("WScript.Shell")
+
+def check_port(port):
+    for proc in process_iter():
+        for conns in proc.connections(kind='inet'):
+            if conns.laddr.port == port:
+                return True
+    return False
+    
+def check_net():
+    confiaveis = ['www.google.com', 'www.yahoo.com', 'www.bb.com.br']
+
+    for host in confiaveis:
+        a=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        a.settimeout(.5)
+        try:
+            b=a.connect_ex((host, 80))
+            if b==0: #ok, conectado
+                return True
+        except:
+            pass
+        a.close()
+    return False
+
+def press():
+    global wsh
+    wsh.SendKeys("{F15}")
+
+def not_hibernate():
+    global wsh
+    while True:
+        time.sleep(60)
+        wsh.SendKeys("{F15}")
+    
 
 def retry(func, loops, erro, **kwargs):
     for _ in range(loops):

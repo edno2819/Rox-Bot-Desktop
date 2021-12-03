@@ -1,8 +1,13 @@
 from libraries.iq_global import *
 from libraries.thread_class import Thread
+from libraries.utils import not_hibernate
+import eel
+import json
 
 
 class MeneRun:
+    NOT_HIBERNATE = Thread(target=not_hibernate)
+    
     def get_infos_run(self):
         result = MAIN.API.get_profile_ansyc()
         name = result['name']
@@ -12,13 +17,13 @@ class MeneRun:
         self.THREAD_RUN = Thread(target=MAIN_RUN.run)
 
     def start_operation(self):
+        MAIN.reconnect()
         self.reset_thread()
         self.THREAD_RUN.start()
+        #MAIN_RUN.run()
 
     def stop_operation(self):
         self.THREAD_RUN.kill()
-        # t1.join()
-        # if not t1.isAlive():
-        #   print('thread killed')
-
+        eel.alert_stop_goal(json.dumps({'msg':'Operação Parada!'}))
+    
 

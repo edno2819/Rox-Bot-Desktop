@@ -1,6 +1,6 @@
-from libraries.iq_global import *
 from libraries.utils import calculate_pavio, time_now
 from datetime import datetime, timedelta
+from libraries.iq_global import *
 
 
  
@@ -11,13 +11,7 @@ def get_assets_py():
     return asssets
 
 
-def catalogar(asset, time):
-    time = int(time)
-    asset
-    return 
-
-
-def catalogacao(asset:str, time:int, clock_init:str, level:int, taxa:float=0.15):
+def catalogacao(asset:str, time:int, level:int, taxa:float=0.15, clock_init='03:00:00'):
     RESULT = {str(c):0 for c in range(level+1)}
     RESULT['-1'] = 0
     RESULT['ENTRADAS'], RESULT['DIR'], RESULT['GALE'] = [], [], []
@@ -38,13 +32,18 @@ def catalogacao(asset:str, time:int, clock_init:str, level:int, taxa:float=0.15)
 
         '''VERIFICANDO SE AS VELAS JA ACABARAM'''
         if c+G+1+level > len(velas):
-            
-            '''TRATANDO O RESULTADO PARA ENVIO'''
             RESULT['Derrota'] = RESULT['-1']
+
             RESULT['RESULTS'] = [RESULT[str(c)] for c in range(level+1)]
             RESULT['RESULTS'].append(RESULT['-1'])
+
             RESULT['COLS'] = [str(c) for c in range(level+1)]
             RESULT['COLS'].append('Loss')
+
+            RESULT['GALE'].reverse()
+            RESULT['DIR'].reverse()
+            RESULT['ENTRADAS'].reverse()
+
             RESULT['ENTRADAS'] = [str(datetime.strptime(date, '%Y-%m-%d %H:%M:%S') - timedelta(hours=3, minutes=0)) for date in RESULT['ENTRADAS']]
             return RESULT
 

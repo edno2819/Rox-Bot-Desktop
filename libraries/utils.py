@@ -39,7 +39,9 @@ def not_hibernate():
     while True:
         time.sleep(60)
         wsh.SendKeys("{F15}")
-    
+
+def force_error():
+    return 5/0
 
 def retry(func, loops, erro, **kwargs):
     for _ in range(loops):

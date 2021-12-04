@@ -1,9 +1,10 @@
 from libraries.strategys import Strategy, Trigger
 from libraries.managementes import Management
 from libraries.thread_class import Thread
-from libraries.utils import check_net
+from libraries.utils import check_net, force_error
 from datetime import datetime
 
+import traceback
 import logging
 import json
 import eel
@@ -81,14 +82,12 @@ class MainOperation:
         self.run_trigger()
         error = 0
         while self.saldo < self.stop_win and self.saldo > self.stop_loss:
-
             try:
-
                 direc = self.strategy.rox(self.asset, wait=wait)
                 wait = self.making_bet_martingale(direc)
                 error=0
             except Exception as e:
-                self.log.info(f"Erro in method run: {e}")
+                self.log.info(f"Erro in method run: {traceback.format_exc()}")
                 msg_erro = self.check_erro()
                 error+=1
                 if error>1 or msg_erro:
@@ -102,6 +101,7 @@ class MainOperation:
     def beting_martin(self, bet, direc, lucro):
         clock = datetime.now().strftime('%H:%M:%S')
         result = self.make_bet(self.asset, bet, direc, self.time_operation)
+        force_error() if result==False else ...
         self.log.info(f"Operation started infos: {self.asset}, {bet}, {direc}, {self.time_operation}")
         lucro += result
         return result, clock, lucro
@@ -132,9 +132,11 @@ class MainOperation:
 
             elif result>0:
                 wait =  False if level==1 else True
+                self.log.info(f"Exit operation by result>0")
                 return wait
             
             if level>self.level: 
+                self.log.info(f"Exit operation by level>self.level")
                 return True
                 
             if level==-1: 
@@ -175,4 +177,11 @@ class MainOperation:
             self.log.info(f"Instância IQ desconectada!")
             if not self.iq.reconnect():
                 return 'Sem conexão com a IQ OPTION'
+            self.log.info(f"Instância IQ reconectada!")
+        else:
+            opens_assets = self.iq.get_assets_open()
+            opens_assets = opens_assets[0] if self.configs['BINA_DINA']=="BINARIA" else opens_assets[1]
+            if self.asset not in opens_assets:
+                return 'paridade fechada!'
+
 

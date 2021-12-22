@@ -15,13 +15,14 @@ def get_infos():
 def set_variables_configs2(entrada, delay, stop_win, stop_loss, type_operation, type_stop, trigger, multiplier):
     stop_win = 0 if stop_win=='' else stop_win
     stop_loss = 0 if stop_loss=='' else stop_loss
-    LOG.info(f"set configs2 : {entrada}, {delay}, {stop_win}, {stop_loss}, {type_operation}, {type_stop}")
-    type_operation = 'PRACTICE'#TIRAR
-    MAIN_RUN.set_configs({
+
+    dic = {
     'ENTRADA':abs(float(entrada)), 'DELAY':int(round(float(delay),0)), 
     'TRIGGER':int(trigger.replace(',', '.')),'stop_win':float(stop_win), 
     'stop_loss':float(stop_loss), 'type_operation':type_operation, 
     'type_stop':type_stop, 'MUTIPLIER':float(multiplier)
-    })
-
+    }
+    #LOG.info(f"set configs2 : {entrada}, {delay}, {stop_win}, {stop_loss}, {type_operation}, {type_stop}")
+    LOG.info(f"set configs2 : {dic.__str__()}")
+    MAIN_RUN.set_configs(dic)
     MAIN_RUN.set_init()

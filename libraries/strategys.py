@@ -59,11 +59,14 @@ class Trigger:
         self.analy.set_delay(-1)
         self.iq = iq
     
+
     def catalogacao(self, asset:str, time:int, level:int, taxa:float=0.15, clock_init='03:00:00'):
         RESULT = {str(c):0 for c in range(level+1)}
         RESULT['-1'] = 0
         RESULT['ENTRADAS'], RESULT['DIR'], RESULT['GALE'] = [], [], []
-        ve = self.iq.get_velas(asset, 15, time)
+
+        qtd_velas = int(((60* int(time_now('%H'))/time)+1)+60)
+        ve = self.iq.get_velas(asset, qtd_velas, time)
 
         day = '-'+time_now('%d')+' '
 
@@ -113,13 +116,89 @@ class Trigger:
                 RESULT[str(win)] +=1
                 RESULT['GALE'].append('Loss' if win==-1 else win)
 
+
+    def catalogacao_next_vela(self, asset:str, time:int, level:int, taxa:float=0.15, clock_init='03:00:00'):
+        last, exit, resu = False, False, False
+
+        qtd_velas = int(((60* int(time_now('%H'))/time)+1)+60)
+
+        ve = self.iq.get_velas(asset, qtd_velas, time)
+
+        day = '-'+time_now('%d')+' '
+
+        axo = False
+        for c in ve:
+            if day in c[0] and clock_init in c[0]:
+                axo = True
+                break
+        velas = ve[ve.index(c):] if axo else ve
+
+        G=0
+        for c in range(len(velas)):
+
+            if exit:    
+                return resu
+
+            vela = velas[c+G]
+            pavio_top, pavio_bot = calculate_pavio(vela)
+            direc = 1 if pavio_top>pavio_bot else -1
+
+            if abs(pavio_top - pavio_bot)<=min(pavio_top, pavio_bot)*taxa:
+                direc  = vela[-1]
+                
+            if direc!=0:
+                if len(velas)>=c+G+1+level+1:
+                    velas_ope = velas[c+G+1:c+G+1+level+1] 
+
+                else:
+                    velas_ope = velas[c+G+1:]
+                    last = True
+
+                velas_ope = [f[-1] for f in velas_ope]
+
+                win = -1 if direc not in velas_ope else velas_ope.index(direc)
+                if win==-1:
+                    if last:
+                        exit = True
+                        resu = 1 if len(velas_ope)==level+1 else False
+                    else:
+                        G+=level+1
+                elif win>0:
+                    last=False
+                    G+=win+1
+                    if len(velas_ope)==1 or len(velas)<=c+1+G:
+                        exit = True
+                        resu = win
+
+            else:
+                if len(velas[c+G+1:])==1:
+                    exit = True
+                    resu = win
+
+
     def rox_trigger(self, asset, time, level, loss_to_trigger):
+        self.log.info(f'Trigger ROX Init')
+
         while True:
             sleep(0.2)
             if CandlestickAnality.wait_time(self.analy.TIMES[time]):
                 result = self.catalogacao(asset, time, level)
                 if result['GALE'][len(result['GALE']) - loss_to_trigger:].count('Loss')==loss_to_trigger:
-                    self.log.info(f'Result to Trigger ROX {result["ENTRADAS"][len(result["ENTRADAS"]) - loss_to_trigger:]}')
+                    self.log.info(f'Start operation - Result to Trigger ROX {result["ENTRADAS"][len(result["ENTRADAS"]) - loss_to_trigger:]}')
+                    return
+
+
+    def rox_trigger_next_vela(self, asset, time, level, loss_to_trigger):
+        self.log.info(f'Trigger ROX Init')
+
+        while True:
+            sleep(0.2)
+            if CandlestickAnality.wait_time(self.analy.TIMES[time]):
+                result = self.catalogacao_next_vela(asset, time, level)
+                self.log.info(f'Result to Trigger ROX Next Vela: {result}')
+                if result:
+                    sleep(30) if result>0 else ''
+                    self.log.info(f'Start operation - Result to Trigger ROX Next Vela: {result}')
                     return
 
 
@@ -181,6 +260,7 @@ class Strategy:
             else: 
                 return 'INDE'
 
+        sleep(5) if wait else '' 
         while True:
             direc = 'INDE'
             if wait:

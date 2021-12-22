@@ -22,9 +22,9 @@ class GereBet:
         level-=1
         return level, empates   
 
+  
 
-
-class MainOperation:
+class MainOperation: 
 
     def __init__(self, iq_instance) -> None:
         self.strategy = Strategy(iq_instance)
@@ -72,7 +72,9 @@ class MainOperation:
 
 
     def run_trigger(self):
-        if self.trigger_level>0:
+        if self.trigger_level==0:
+            self.trigger.rox_trigger_next_vela(self.asset, self.time_operation, self.level, self.trigger_level)
+        elif self.trigger_level==1:
             self.trigger.rox_trigger(self.asset, self.time_operation, self.level, self.trigger_level)
 
 

@@ -19,8 +19,9 @@ class MeneRun:
     def start_operation(self):
         MAIN.reconnect()
         self.reset_thread()
-        self.THREAD_RUN.start()
+        LOG.info('Start operation button!')
         #MAIN_RUN.run()
+        self.THREAD_RUN.start()
 
     def stop_operation(self):
         self.THREAD_RUN.kill()

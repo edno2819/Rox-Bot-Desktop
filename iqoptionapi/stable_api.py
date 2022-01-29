@@ -23,7 +23,6 @@ def nested_dict(n, type):
 
 
 class IQ_Option:
-    __version__ = "7.0.0"
 
     def __init__(self, email, password, active_account_type="PRACTICE"):
         self.size = [1, 5, 10, 15, 30, 60, 120, 300, 600, 900, 1800,
@@ -501,12 +500,10 @@ class IQ_Option:
         self.api.candles.candles_data = None
         while True:
             try:
-                self.api.getcandles(OP_code.ACTIVES[ACTIVES], interval, count, endtime)
-                for c in range(5000):
-                    if self.check_connect and self.api.candles.candles_data == None:
-                        pass
-                    else:
-                        break
+                self.api.getcandles(
+                    OP_code.ACTIVES[ACTIVES], interval, count, endtime)
+                while self.check_connect and self.api.candles.candles_data == None:
+                    pass
                 if self.api.candles.candles_data != None:
                     break
             except:
@@ -910,8 +907,8 @@ class IQ_Option:
                 id = self.api.buy_multi_option[req_id]["id"]
             except:
                 pass
-            if time.time() - start_t >= 3:
-                logging.error('**warning** buy late 3 sec')
+            if time.time() - start_t >= 5:
+                logging.error('**warning** buy late 5 sec')
                 return False, None
 
         return self.api.result, self.api.buy_multi_option[req_id]["id"]

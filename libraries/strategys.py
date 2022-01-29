@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 from time import sleep
 import logging
 
+
+
 class CandlestickAnality:
     SEGMENTO = 0
     TIMES = {
@@ -50,6 +52,223 @@ class CandlestickAnality:
             
     def RSI(nivel):...
 
+
+class Catalog:
+
+    def __init__(self, iq, asset, time, level, clock_init='03:00:00') -> None:
+        self.log = logging.getLogger(__name__) 
+        self.clock_init = clock_init
+        self.asset = asset
+        self.time = time
+        self.iq = iq
+        self.level = level
+    
+    def setResult(self):
+        self.RESULT = {str(c):0 for c in range(-1,self.level+1)}
+        self.RESULT['ENTRADAS'], self.RESULT['DIR'], self.RESULT['GALE'] = [], [], []
+
+    def get_direct(self, vela, taxa):
+        pavio_top, pavio_bot = calculate_pavio(vela)
+        direc = 1 if pavio_top>pavio_bot else -1
+        if abs(pavio_top - pavio_bot)<=min(pavio_top, pavio_bot)*taxa:
+            direc  = vela[-1]
+        return direc
+    
+    def exclue_velas(self, velas):
+        axo = False
+        day = '-'+time_now('%d')+' '
+        for c in velas:
+            if day in c[0] and self.clock_init in c[0]:
+                axo = True
+                break
+        return velas[velas.index(c):] if axo else velas
+
+    def get_velas(self):
+        qtd_velas = int(((60* int(time_now('%H'))/self.time)+1)+60)
+        ve = self.iq.get_velas(self.asset, qtd_velas, self.time)
+        return self.exclue_velas(ve)
+
+    def standartOperation(self, velas, direc, jump, c):
+        exit, resu = False, False
+        velas_ope = velas[c+jump+1:c+jump+1+self.level+1] 
+        direc_velas = [f[-1] for f in velas_ope]
+        win = -1 if direc not in direc_velas else direc_velas.index(direc)
+
+        if win==-1:
+            jump+=self.level+1
+            if velas_ope[-1]==velas[-1]:
+                self.log.info(f'Saida da catalogação por Standart loss: velas_ope[-1]==velas[-1]')
+                exit = True
+                resu =  (self.level+1) - len(direc_velas) 
+
+        elif win>0:
+            jump+=win+1
+            if velas_ope[-1]==velas[-1] and win+1==len(direc_velas):
+                self.log.info(f'Saida da catalogação por Standrt Win: velas_ope[-1]==velas[-1] and win+1==len(direc_velas)')
+                exit = True
+
+        return exit, resu, win, jump
+
+    def lastOperation(self, velas, direc, jump, c):
+        exit, resu = False, False
+        velas_ope = velas[c+jump+1:]
+        direc_velas = [f[-1] for f in velas_ope]
+        win = -1 if direc not in direc_velas else direc_velas.index(direc)
+
+        if win==-1:
+            self.log.info(f'Saida da catalogação por Last loss')
+            exit = True
+            resu =  (self.level+1) - len(direc_velas) 
+        elif win>0:
+            jump+=win+1
+            #Se for a unica vela ele sai
+            if len(direc_velas)==1:
+                self.log.info(f'Saida da catalogação por Last win: len(direc_velas)==1')
+                exit = True
+                resu = 'run'
+            elif win+1==len(direc_velas):
+                self.log.info(f'Saida da catalogação por Last win: win+1==len(direc_velas)')
+                exit = True
+                resu = 'wait'
+        return exit, resu, win, jump
+
+    def formatReturnResult(self):
+        self.RESULT['Derrota'] = self.RESULT['-1']
+
+        self.RESULT['RESULTS'] = [self.RESULT[str(c)] for c in range(self.level+1)]
+        self.RESULT['RESULTS'].append(self.RESULT['-1'])
+
+        self.RESULT['COLS'] = [str(c) for c in range(self.level+1)]
+        self.RESULT['COLS'].append('Loss')
+
+        self.RESULT['GALE'].reverse()
+        self.RESULT['DIR'].reverse()
+        self.RESULT['ENTRADAS'].reverse()
+
+        self.RESULT['ENTRADAS'] = [str(datetime.strptime(date, '%Y-%m-%d %H:%M:%S') - timedelta(hours=3, minutes=0)) for date in self.RESULT['ENTRADAS']]
+        return self.RESULT
+
+    def catalogacao(self, taxa:float=0.15):
+        exit, resu = False, False
+        self.setResult()
+        velas = self.get_velas()
+
+        jump = 0
+        for c in range(len(velas)):
+            if exit:  
+                return resu, self.formatReturnResult(), direc 
+
+            vela = velas[c+jump]
+            direc = self.get_direct(vela, taxa)
+
+            if direc!=0:
+                self.RESULT['ENTRADAS'].append(vela[0])
+                self.RESULT['DIR'].append(direc)
+
+                if len(velas)>c+jump+1+self.level:
+                    exit, resu, win, jump = self.standartOperation(velas, direc, jump, c)
+                else:
+                    exit, resu, win, jump = self.lastOperation(velas, direc, jump, c)
+
+                self.RESULT[str(win)] +=1
+                self.RESULT['GALE'].append('Loss' if win==-1 else win)        
+
+    def catalogacao2(self, taxa:float=0.15):
+        exit, resu = False, False
+        self.setResult()
+        velas = self.get_velas()
+
+        jump = 0
+        for c in range(len(velas)):
+            if exit:  
+                return resu, self.formatReturnResult()
+
+            vela = velas[c+jump]
+            direc = self.get_direct(vela, taxa)
+
+            if direc!=0:
+                self.RESULT['ENTRADAS'].append(vela[0])
+                self.RESULT['DIR'].append(direc)
+
+                if len(velas)>=c+jump+1+self.level+1:
+                    exit, resu, win, jump = self.standartOperation(velas, direc, jump, c)
+                else:
+                    exit, resu, win, jump = self.lastOperation(velas, direc, jump, c)
+
+                self.RESULT[str(win)] +=1
+                self.RESULT['GALE'].append('Loss' if win==-1 else win)
+
+              
+            if c+jump+1>=len(velas):
+                exit = True
+                resu = False
+
+
+class Strategy:
+    SEGMENTO = 0
+    TIMES = CandlestickAnality.TIMES
+
+    def __init__(self, iq) -> None:
+        self.log = logging.getLogger(__name__)    
+        self.iq=iq   
+        self.time = 1 
+    
+
+    def set_delay(self, delay:int):
+        if delay>=0:
+            delay = -1
+
+        self.TIMES = {
+                    1:[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                    5:[4, 9],
+                    15:[4, 9],
+                    }
+
+        delay_seconds = ((60 + delay)/100)
+        for key in self.TIMES.keys():
+            self.TIMES[key] = [round(value + delay_seconds,2) for value in self.TIMES[key]]
+        self.log.info(f"Set delay: {self.TIMES[self.time]}")
+
+    
+    def rox(self, par, taxa_dif_vela=0.1, wait=True) -> str:
+        def rox_():
+            minute = ((datetime.now()).strftime('%M'))
+            velas_=self.iq.get_velas(par, 2, self.time)
+            vela = CandlestickAnality.get_vela_for_time(velas_, minute[1:])
+
+            pavio_top, pavio_bot = calculate_pavio(vela)
+            direc = 1 if pavio_top>pavio_bot else -1
+
+            self.log.info(f"Vela de operação {vela}; Maior pavio {direc}")
+
+            if int(time_now("%S"))>4 and int(time_now("%S"))<=55 and wait==True:
+                self.log.info(f"Sinal cancelado por delay; Entrada ROX {minute}")
+                return 'INDE'
+
+            
+            '''PAVIOS TECNICAMENTE EMPATADOS'''
+            if abs(pavio_top - pavio_bot)<=min(pavio_top, pavio_bot)*taxa_dif_vela:
+                direc = vela[-1]
+
+            if direc==1:
+                return 'CALL'
+            elif direc==-1:
+                return 'PUT'
+            else: 
+                return 'INDE'
+
+        sleep(5) if wait else '' 
+        while True:
+            direc = 'INDE'
+            if wait:
+                sleep(0.2)
+                if CandlestickAnality.wait_time(self.TIMES[self.time]):
+                    direc = rox_()
+            else:
+                direc = rox_()
+
+            if direc in ['PUT', 'CALL']:
+                return direc
 
 
 class Trigger:
@@ -178,97 +397,53 @@ class Trigger:
 
     def rox_trigger(self, asset, time, level, loss_to_trigger):
         self.log.info(f'Trigger ROX Init')
+        stratgy = Catalog(self.iq, asset, time, level)
 
         while True:
             sleep(0.2)
             if CandlestickAnality.wait_time(self.analy.TIMES[time]):
-                result = self.catalogacao(asset, time, level)
-                if result['GALE'][len(result['GALE']) - loss_to_trigger:].count('Loss')==loss_to_trigger:
-                    self.log.info(f'Start operation - Result to Trigger ROX {result["ENTRADAS"][len(result["ENTRADAS"]) - loss_to_trigger:]}')
+                _, result = stratgy.catalogacao()
+                if 'Loss' in result['GALE'][:1]:
+                    self.log.info(f'Start operation - Result to Trigger ROX {result["ENTRADAS"][0]}')
                     return
 
 
     def rox_trigger_next_vela(self, asset, time, level, loss_to_trigger):
+        '''
+        Casos:
+            1 - 
+        '''
         self.log.info(f'Trigger ROX Init')
+        stratgy = Catalog(self.iq, asset, time, level)
 
         while True:
             sleep(0.2)
             if CandlestickAnality.wait_time(self.analy.TIMES[time]):
-                result = self.catalogacao_next_vela(asset, time, level)
-                self.log.info(f'Result to Trigger ROX Next Vela: {result}')
-                if result:
-                    sleep(30) if result>0 else ''
-                    self.log.info(f'Start operation - Result to Trigger ROX Next Vela: {result}')
-                    return
+                trigger, result, dir = stratgy.catalogacao()
+                if result!=False:
+                    break
 
-
-
-class Strategy:
-    SEGMENTO = 0
-    TIMES = {
-        1:[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-        5:[4, 9],
-        15:[4, 9],
-    }
-
-    def __init__(self, iq) -> None:
-        self.log = logging.getLogger(__name__)    
-        self.iq=iq   
-        self.time = 1 
-    
-
-    def set_delay(self, delay:int):
-        if delay>=0:
-            delay = -1
-
-        self.TIMES = {
-                    1:[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-                    5:[4, 9],
-                    15:[4, 9],
-                    }
-
-        delay_seconds = ((60 + delay)/100)
-        for key in self.TIMES.keys():
-            self.TIMES[key] = [round(value + delay_seconds,2) for value in self.TIMES[key]]
-        self.log.info(f"Set delay: {self.TIMES[self.time]}")
-
-    
-    def rox(self, par, taxa_dif_vela=0.1, wait=True) -> str:
-        def rox_():
-            minute = ((datetime.now()).strftime('%M'))
-            velas_=self.iq.get_velas(par, 2, self.time)
-            vela = CandlestickAnality.get_vela_for_time(velas_, minute[1:])
-
-            pavio_top, pavio_bot = calculate_pavio(vela)
-            direc = 1 if pavio_top>pavio_bot else -1
-
-            self.log.info(f"Vela de operação {vela}; Maior pavio {direc}")
-
-            if int(time_now("%S"))>4 and int(time_now("%S"))<=55 and wait==True:
-                self.log.info(f"Sinal cancelado por delay; Entrada ROX {minute}")
-                return 'INDE'
-
-            
-            '''PAVIOS TECNICAMENTE EMPATADOS'''
-            if abs(pavio_top - pavio_bot)<=min(pavio_top, pavio_bot)*taxa_dif_vela:
-                direc = vela[-1]
-
-            if direc==1:
-                return 'CALL'
-            elif direc==-1:
-                return 'PUT'
-            else: 
-                return 'INDE'
-
-        sleep(5) if wait else '' 
+        count = 0
         while True:
-            direc = 'INDE'
-            if wait:
-                sleep(0.2)
-                if CandlestickAnality.wait_time(self.TIMES[self.time]):
-                    direc = rox_()
-            else:
-                direc = rox_()
+            sleep(0.2)
 
-            if direc in ['PUT', 'CALL']:
-                return direc
+            if trigger=='run':
+                self.log.info(f'Start operation - Result to Trigger ROX Next Vela 1: {result["ENTRADAS"][0]}, Triger: {trigger},  Dir: {dir}')
+                return True
+
+            elif trigger=='wait' or trigger==0:
+                sleep(30)
+                self.log.info(f'Start operation - Result to Trigger ROX Next Vela 2: {result["ENTRADAS"][0]}, Triger: {trigger},  Dir: {dir}')
+                return False
+
+            elif type(trigger)==int:
+                if CandlestickAnality.wait_time(self.analy.TIMES[time]):
+                    velas = self.iq.get_velas(asset, 1, time)
+                    if velas[-1][-1]==dir or count==trigger:
+                        wait = trigger!=level+1 and count!=0
+                        self.log.info(f'Start operation - Result to Trigger ROX Next Vela 3: {result["ENTRADAS"][0]} wair: {wait}, Triger: {trigger},  Dir: {dir}')
+                        sleep(30) if wait else ''#caso seja win de primeira
+                        return wait
+                    count+=1#verificar quando for win de primeira fora da catalogação
+                    sleep(3)
+

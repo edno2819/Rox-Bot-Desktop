@@ -22,7 +22,7 @@ def set_variables_configs2(entrada, delay, stop_win, stop_loss, type_operation, 
     'stop_loss':float(stop_loss), 'type_operation':type_operation, 
     'type_stop':type_stop, 'MUTIPLIER':float(multiplier)
     }
-    #LOG.info(f"set configs2 : {entrada}, {delay}, {stop_win}, {stop_loss}, {type_operation}, {type_stop}")
+    
     LOG.info(f"set configs2 : {dic.__str__()}")
     MAIN_RUN.set_configs(dic)
     MAIN_RUN.set_init()

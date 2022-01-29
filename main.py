@@ -14,7 +14,6 @@ class GerePages:
         self.current_html = name
 
 
-
 @eel.expose
 def get_mensagem():
     eel.get_mensagem_init(to_json_js(get_msg_sheet())) 

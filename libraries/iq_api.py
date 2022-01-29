@@ -84,13 +84,14 @@ class IqOption:
         return result
 
     def get_velas_live(self, par, step:int, time_frame:int):
-        #size=[1,5,10,15,30,60,120,300,600,900,1800,3600,7200,14400,28800,43200,86400,604800,2592000,"all"] em segundos
+        '''size= 1,5,10,15,30,60,120,300,600,900,1800,3600,7200,14400,28800,43200,86400,604800,2592000,"all" em segundos'''
+
         self.API.start_candles_stream(par, time_frame*60, step)
         velas=self.API.get_realtime_candles(par,time_frame)
         for item in velas:
-            #clock=utils.timestamp_converter(item)
+            clock=utils.timestamp_converter(item)
             vela = velas[item]
-            #vela_convert=[str(utils.timestamp_converter(vela['from'])),vela['open'],vela['max'],vela['min'],vela['close'],vela['volume']]
+            vela_convert=[str(utils.timestamp_converter(vela['from'])),vela['open'],vela['max'],vela['min'],vela['close'],vela['volume']]
         self.API.stop_candles_stream(par,time_frame)
 
     def bet_binaria(self, par:str, amount:float, action:str, time_frame:int, func=''):
@@ -104,7 +105,8 @@ class IqOption:
         else: return False
 
     def bet_digital(self, par:str, amount:float, action:str, time_frame:int, func=''):
-        #action = CALL/PUT
+        '''action = CALL/PUT'''
+
         _, id = self.API.buy_digital_spot_v2(par, amount, action, time_frame)
         status = True if id != "error" else False
 
@@ -123,3 +125,11 @@ class IqOption:
         self.API.api.close()
 
 
+if __name__ == 'main':
+    iq = IqOption()
+    iq.conect('edno@hotmail.com', '99730755ed')
+    iq.change_balance()
+    assets = iq.payout_all()
+    par = 'EURUSD-OTC'
+    time = 1
+    iq.bet_digital(par , 2, 'CALL', 1)

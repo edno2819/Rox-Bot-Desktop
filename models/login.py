@@ -17,7 +17,7 @@ def login_user(user_name, password):
         if USERS['clientes'][user_name]=='':
             LOG.info("Conta sem periodo de expiração! Ativando por precaução.")
             activ_bot = True
-        elif parse(USERS['clientes'][user_name])>=parse(time_now('%d/%m/%y')):
+        elif parse(USERS['clientes'][user_name])>=parse(time_now('%d/%m/%y'), dayfirst=True):
             LOG.info("Conta liberada por periodo de expiração!")
             activ_bot = True
 

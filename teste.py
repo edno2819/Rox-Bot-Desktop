@@ -1,102 +1,135 @@
-from libraries.utils import calculate_pavio, time_now
-from libraries.iq_api import IqOption
+from iqoptionapi.stable_api import IQ_Option
+import libraries.utils as utils
+import time
 
 
+class IqOption:        
+    def conect(self, conta, senha):
+        self.API = IQ_Option(conta, senha)
+        self.API.connect()
+        self.type ='PRACTICE'
+        
+        if self.API.check_connect(): 
+            return True
+        else: 
+            return False
 
-MAIN = IqOption()
-MAIN.conect("edno28@hotmail.com","99730755ed")
-par = "EURGBP"
-time = 1
-level = 3
+    def reconnect(self):
+        if not self.API.check_connect(): 
+            self.API.connect()
+            self.API.change_balance(self.type)
+            return self.API.check_connect()
 
-class ets:
+    def change_balance(self, type='PRACTICE'):
+        '''PRACTICE / REAL'''
+        self.type = type
+        self.API.change_balance(type)
+        
+    def saldo(self):
+        self.perfil = self.API.get_profile_ansyc()
+        saldo = self.perfil['balances'][1]['amount'] if self.type =='PRACTICE' else self.perfil['balances'][0]['amount']
+        return saldo
 
-    def __init__(self, iq, asset, time, clock_init) -> None:
-        self.clock_init = clock_init
-        self.asset = asset
-        self.time = time
-        self.iq = iq
-    
-    def setResult(self):
-        self.RESULT = {str(c):0 for c in range(-1,level+1)}
-        self.RESULT['ENTRADAS'], self.RESULT['DIR'], self.RESULT['GALE'] = [], [], []
+    def get_assets_open(self):
+        bina=[]
+        digi=[]
+        pares = self.API.get_all_open_time()
+        for paridade in pares['turbo']:
+            if pares['turbo'][paridade]['open']==True:
+                bina.append(paridade)
 
-    def get_direct(self, vela, taxa):
-        pavio_top, pavio_bot = calculate_pavio(vela)
-        direc = 1 if pavio_top>pavio_bot else -1
-        if abs(pavio_top - pavio_bot)<=min(pavio_top, pavio_bot)*taxa:
-            direc  = vela[-1]#tratar tamanho da vela
-        return direc
-    
-    def exclue_velas(self, velas):
-        axo = False
-        day = '-'+time_now('%d')+' '
-        for c in velas:
-            if day in c[0] and self.clock_init in c[0]:
-                axo = True
-                break
-        return velas[velas.index(c):] if axo else velas
+        for paridade in pares['digital']:
+            if pares['digital'][paridade]['open']==True:
+                digi.append(paridade)
+        return bina, digi
 
-    def get_velas(self):
-        qtd_velas = int(((60* int(time_now('%H'))/time)+1)+60)
-        ve = self.iq.get_velas(self.asset, qtd_velas, time)
-        return self.exclue_velas(ve)
+    def payout_all(self):
+        bina, digi = self.get_assets_open()
+        pares = self.API.get_all_profit()
+        bina_dict = {}
+        digi_dict = {}
 
-    def standartOperation(self, velas, direc, G, c):
-        velas_ope = velas[c+G+1:c+G+1+level+1] 
-        direc_velas = [f[-1] for f in velas_ope]
-        win = -1 if direc not in direc_velas else direc_velas.index(direc)
-        if win==-1:
-                G+=level+1
-        elif win>0:
-            G+=win+1
+        for par in bina:
+            bina_dict[par] = int(100 * pares[par]['turbo'])
 
-        return win, G
+        for par in digi:
+            digi_dict[par]= self.API.get_digital_payout(par)
 
-    def lastOperation(self, velas, direc, G, c):
-        velas_ope = velas[c+G+1:]
-        direc_velas = [f[-1] for f in velas_ope]
-        win = -1 if direc not in direc_velas else direc_velas.index(direc)
+        return bina_dict, digi_dict
 
-        if win==-1:
-            exit = True
-            resu = 1 if len(direc_velas)==level+1 else False
-        elif win>0:
-            G+=win+1
-            if len(direc_velas)==1 or len(velas)<=c+1+G:
-                exit = True
-                resu = win
-        return exit, resu, win, G
+    def payout(self, par, tipo):
+        if tipo == 'BINARIA':
+            pares = self.API.get_all_profit()
+            return int(100 * pares[par]['turbo'])
+            
+        elif tipo == 'DIGITAL':
+            return self.API.get_digital_payout(par)
 
-    def catalogacao(self, level:int, taxa:float=0.15):
-        exit, resu = False, False
-        self.setResult()
-        velas = self.get_velas()
+    def get_velas(self, par, step:int, time_frame:int):
+        result=[]
+        velas = self.API.get_candles(par, time_frame*60, step+1, time.time())
+        for vela in velas:
+            direct= (1 if vela['open']<vela['close'] else -1) if vela['open']!=vela['close'] else 0
+            vela_convert=[str(utils.timestamp_converter(vela['from'])),vela['open'],vela['max'],vela['min'],vela['close'], direct]
+            result.append(vela_convert)
+        return result
 
-        G=0
-        for c in range(len(velas)):
-            if exit:    
-                return resu
+    def get_velas_complete(self, par, step:int, time_frame:int):
+        result=[]
+        velas = self.API.get_candles(par, time_frame*60, step+1, time.time())
+        for vela in velas:
+            direct= (1 if vela['open']<vela['close'] else -1) if vela['open']!=vela['close'] else 0
+            vela_convert=[str(utils.timestamp_converter(vela['from'])),vela['open'],vela['max'],vela['min'],vela['close'], direct]
+            result.append(vela_convert)
+        return result
 
-            vela = velas[c+G]
-            direc = self.get_direct(vela, taxa)
+    def get_velas_live(self, par, step:int, time_frame:int):
+        '''size= 1,5,10,15,30,60,120,300,600,900,1800,3600,7200,14400,28800,43200,86400,604800,2592000,"all" em segundos'''
 
-            if direc!=0:
-                self.RESULT['ENTRADAS'].append(vela[0])
-                self.RESULT['DIR'].append(direc)
+        self.API.start_candles_stream(par, time_frame*60, step)
+        velas=self.API.get_realtime_candles(par,time_frame)
+        for item in velas:
+            clock=utils.timestamp_converter(item)
+            vela = velas[item]
+            vela_convert=[str(utils.timestamp_converter(vela['from'])),vela['open'],vela['max'],vela['min'],vela['close'],vela['volume']]
+        self.API.stop_candles_stream(par,time_frame)
 
-                if len(velas)>=c+G+1+level+1:
-                    win, G = self.standartOperation(velas, direc, G, c)
-                else:
-                    exit, resu, win, G = self.lastOperation(velas, direc, G, c)
+    def bet_binaria(self, par:str, amount:float, action:str, time_frame:int, func=''):
+        status, id = self.API.buy(amount, par, action, time_frame)
+        func(status, action) if func!='' else ...
 
-                self.RESULT[str(win)] +=1
-                self.RESULT['GALE'].append('Loss' if win==-1 else win)
+        if status:
+            status2,lucro=self.API.check_win_v4(id)
+            if status2:
+                return round(lucro, 2)
+        else: return False
+
+    def bet_digital(self, par:str, amount:float, action:str, time_frame:int, func=''):
+        '''action = CALL/PUT'''
+
+        _, id = self.API.buy_digital_spot_v2(par, amount, action, time_frame)
+        status = True if id != "error" else False
+
+        func(status, action) if func!='' else ...
+
+        if id != "error":
+            while True:
+                time.sleep(0.1)
+                check , win = self.API.check_win_digital_v2(id)
+                if check==True: 
+                    return  round(win,2)
+
+        else: return False
+
+    def close(self):
+        self.API.api.close()
 
 
-def asd():
-    stratgy = ets(MAIN, par, time, '03:00:00')
-    result = stratgy.catalogacao(2)
-
-
-asd()
+if __name__ == '__main__':
+    iq = IqOption()
+    iq.conect('edno28@hotmail.com', '99730755ed')
+    iq.change_balance()
+    assets = iq.payout_all()
+    par = 'EURUSD-OTC'
+    time = 1
+    iq.bet_digital(par , 2, 'CALL', 1)

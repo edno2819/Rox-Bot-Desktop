@@ -74,7 +74,8 @@ class MainOperation:
     def run_trigger(self):
         wait = True
         if self.trigger_level==0:
-            wait = self.trigger.rox_trigger_next_vela(self.asset, self.time_operation, self.level, self.trigger_level)
+            #wait = self.trigger.rox_trigger_next_vela(self.asset, self.time_operation, self.level, self.trigger_level)
+            wait=True
         elif self.trigger_level==1:
             self.trigger.rox_trigger(self.asset, self.time_operation, self.level, self.trigger_level)
         
@@ -84,7 +85,7 @@ class MainOperation:
     def run(self):
         msg = False
         wait = True
-        #self.run_trigger()
+        self.run_trigger()
         error = 0
         while self.saldo < self.stop_win and self.saldo > self.stop_loss:
             try:

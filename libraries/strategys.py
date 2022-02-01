@@ -118,7 +118,7 @@ class Catalog:
         if win==-1:
             self.log.info(f'Saida da catalogação por Last loss')
             exit = True
-            resu =  (self.level+1) - len(direc_velas) 
+            resu =  (self.level+1) - len(direc_velas) # Perdeu em todos os gales == 0
         elif win>0:
             jump+=win+1
             #Se for a unica vela ele sai
@@ -402,9 +402,10 @@ class Trigger:
         while True:
             sleep(0.2)
             if CandlestickAnality.wait_time(self.analy.TIMES[time]):
-                _, result = stratgy.catalogacao()
-                if 'Loss' in result['GALE'][:1]:
-                    self.log.info(f'Start operation - Result to Trigger ROX {result["ENTRADAS"][0]}')
+                res, result, _ = stratgy.catalogacao()
+                #if 'Loss' in result['GALE'][:1]:    teste
+                if res==0 and 'Loss'== result['GALE'][0] or 'Loss'== result['GALE'][1]:
+                    self.log.info(f'Start operation - Result to Trigger ROX {result["ENTRADAS"][0]} aqui ------------')
                     return
 
 

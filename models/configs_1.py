@@ -11,7 +11,9 @@ def get_assets_py():
 
 def catalogacao(asset:str, time:int, level:int, taxa:float=0.15, clock_init='03:00:00'):
     stratgy = Catalog(MAIN, asset, time, level, clock_init)
-    _, result, _ = stratgy.catalogacao(taxa)
+    res, result, _ = stratgy.catalogacao(taxa)
+    if type(res)==int and result['GALE'][0]=='Loss' and res!=0:
+        result['GALE'][0]='Operando'
     return result
     
 def set_variables_configs1(asset, time, nivel, bina_dina):
